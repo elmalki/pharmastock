@@ -41,7 +41,7 @@ const selected = ref(props.produits)
 watch(selected,(val)=> emit('selected', selected.value))
 
 function searchLabel(item) {
-    return item.label
+    return `${item.label}(${item.barcode})`
 }
 
 </script>

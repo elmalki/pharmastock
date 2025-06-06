@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Commande::class)->onDelete('cascade');
             $table->string('n_lot')->nullable();
             $table->unsignedInteger('tva')->default(0);// tva for the invoices
-            $table->decimal('qte',8,2)->unsigned()->nullable();
-            $table->decimal('qte_achete',8,2)->unsigned()->nullable();
+            $table->unsignedInteger('qte')->nullable();
+            $table->unsignedInteger('qte_achete')->nullable();
             $table->decimal('prix_achat',8,2)->unsigned()->nullable();
             $table->decimal('prix_vente',8,2)->unsigned()->nullable();
             $table->date('expirationDate')->nullable();

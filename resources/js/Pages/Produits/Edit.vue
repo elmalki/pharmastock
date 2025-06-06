@@ -11,6 +11,16 @@
                     <div class="border-b border-gray-900/10 pb-12">
                         <div class="mt-10  gap-y-8 sm:grid-cols-6">
                             <div class="sm:col-span-4">
+                                <label for="barcode" class="block text-sm/6 font-medium text-gray-900">Code</label>
+                                <div class="mt-2">
+                                    <input v-model="form.barcode" type="text" autocomplete="barcode" disabled="disabled"
+                                           class="block w-full bg-gray-300 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                </div>
+                                <span>
+                                <InputError :message="form.errors.barcode" class="mt-2"/>
+                            </span>
+                            </div>
+                            <div class="sm:col-span-4">
                                 <label for="label" class="block text-sm/6 font-medium text-gray-900">Libellé</label>
                                 <div class="mt-2">
                                     <input v-model="form.label" type="text" autocomplete="label"

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommandeRequest;
 use App\Http\Requests\UpdateCommandeRequest;
 use App\Models\Commande;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class CommandeController extends Controller
@@ -42,6 +43,7 @@ class CommandeController extends Controller
         $commande->save();
         foreach ($request->produits as $produit) {
             $data = $produit['entree'];
+            $data['expirationDate'] =substr($data['expirationDate'],0,10);
             $data['qte_achete'] = $produit['entree']['qte'];
             $commande->montantPaye += $data['qte_achete'] * $data['prix_achat'];
             unset($produit['entree']['created_at']);
@@ -79,6 +81,7 @@ class CommandeController extends Controller
         $commande->montantPaye=0;
         foreach ($request->produits as $produit) {
             $data = $produit['entree'];
+            $data['expirationDate'] =substr($data['expirationDate'],0,10);
             //Checking if the id dosen't exists in the relation
             if( !$ids->contains($produit['id'])){
                 $commande->produits()->attach($produit['id']);
@@ -100,7 +103,7 @@ class CommandeController extends Controller
      */
     public function destroy(Commande $commande)
     {
-        //
+        $commande->delete();
     }
     private function insertProducts(Array $produits,  Commande $commande, bool $isEdit=false)
     {

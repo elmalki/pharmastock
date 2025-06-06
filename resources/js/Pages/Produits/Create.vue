@@ -9,10 +9,18 @@
                     <div class="border-b border-gray-900/10 pb-12">
                         <div class="mt-10  gap-y-8 sm:grid-cols-6">
                             <div class="sm:col-span-4">
+                                <div class="mt-2">
+                                    <button class="px-3 my-3 py-1 min-w-fit bg-teal-500 text-white rounded-lg hover:bg-teal-600" @click="generate()"  @submit.prevent="">Générer</button>
+                                    <InputText class="w-full" v-model="form.barcode" placeholder="Code à a barre"></InputText>
+                                </div>
+                                <span>
+                                <InputError :message="form.errors.label" class="mt-2"/>
+                            </span>
+                            </div>
+                            <div class="sm:col-span-4">
                                 <label for="label" class="block text-sm/6 font-medium text-gray-900">Libellé</label>
                                 <div class="mt-2">
-                                    <input v-model="form.label" type="text" autocomplete="label"
-                                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText class="w-full" v-model="form.label"></InputText>
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.label" class="mt-2"/>
@@ -21,8 +29,8 @@
                             <div class="sm:col-span-4">
                                 <label for="unite" class="block text-sm/6 font-medium text-gray-900">Unité</label>
                                 <div class="mt-2">
-                                    <input v-model="form.unite" type="number" autocomplete="unite"
-                                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText class="w-full" v-model="form.unite" type="number"></InputText>
+
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.unite" class="mt-2"/>
@@ -128,7 +136,8 @@ import {useForm} from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import {Switch} from '@headlessui/vue'
+import {Switch} from '@headlessui/vue';
+import InputText from 'primevue/inputtext';
 import {Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions} from '@headlessui/vue'
 import {CheckIcon, ChevronUpDownIcon} from '@heroicons/vue/20/solid'
 import {computed} from "vue";

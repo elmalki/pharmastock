@@ -33,25 +33,31 @@
                                                class="block w-full"/>
                                 </div>
                             </div>
-                            <div class="sm:col-span-3">
+                            <div class="sm:col-span-2">
                                 <label for="last-name" class="block text-sm/6 font-medium text-gray-900">Prix d'achat(HT)</label>
                                 <div class="mt-2">
                                     <InputText type="number" step="0.01" v-model="entree.prix_achat" id="n_facture"
                                                class="block w-full"/>
                                 </div>
                             </div>
-                            <div class="sm:col-span-3" >
+                            <div class="sm:col-span-2">
+                                <label for="last-name" class="block text-sm/6 font-medium text-gray-900">Prix de Vente(TTC)</label>
+                                <div class="mt-2">
+                                    <InputText type="number" step="0.01" v-model="entree.prix_vente" id="n_facture"
+                                               class="block w-full"/>
+                                </div>
+                            </div>
+                            <div class="sm:col-span-2" >
                                 <label for="last-name" class="block text-sm/6 font-medium text-gray-900">TVA %</label>
                                 <div class="mt-2">
                                     <InputText type="number" v-model="entree.tva" id="n_facture"
                                                class="block w-full"/>
                                 </div>
                             </div>
-                            <div class="sm:col-span-3" v-if="perissable">
-                                <label for="last-name" class="block text-sm/6 font-medium text-gray-900">Date péremption</label>
+                            <div class="sm:col-span-6" v-if="perissable">
+                                <label for="last-name" class="block text-sm/6 font-medium text-gray-900">Date péremption{{entree.expirationDate}}</label>
                                 <div class="mt-2">
-                                    <input type="date" v-model="entree.expirationDate" id="last-name" autocomplete="family-name"
-                                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <DatePicker :showTime="false" v-model="entree.expirationDate" class="w-full" lang="fr" date-format="yy-mm-dd"></DatePicker>
                                 </div>
                             </div>
 
@@ -63,7 +69,7 @@
 </template>
 <script setup>
 import InputText from "primevue/inputtext";
-
+import DatePicker   from "primevue/datepicker";
 const props = defineProps({entree: Object,label:String,id:Number,perissable:Boolean})
 //props.entree.tva = 20;
 const emit = defineEmits(['removeItem'])

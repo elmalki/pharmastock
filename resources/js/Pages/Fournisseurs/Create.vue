@@ -13,7 +13,7 @@
                             <div class="sm:col-span-4">
                                 <label for="email" class="block text-sm/6 font-medium text-gray-900">Société</label>
                                 <div class="mt-2">
-                                    <input  v-model="form.societe" type="text" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText v-model="form.societe" class="w-full"></InputText>
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.societe" class="mt-2"/>
@@ -22,7 +22,7 @@
                             <div class="sm:col-span-4">
                                 <label for="email" class="block text-sm/6 font-medium text-gray-900">Contact</label>
                                 <div class="mt-2">
-                                    <input  v-model="form.contact" type="text" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText v-model="form.contact" class="w-full"></InputText>
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.contact" class="mt-2"/>
@@ -31,7 +31,7 @@
                             <div class="sm:col-span-4">
                                 <label for="email" class="block text-sm/6 font-medium text-gray-900">Adresse</label>
                                 <div class="mt-2">
-                                    <input v-model="form.adresse" type="text" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText v-model="form.adresse" class="w-full"></InputText>
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.adresse" class="mt-2"/>
@@ -40,7 +40,7 @@
                             <div class="sm:col-span-4">
                                 <label for="email" class="block text-sm/6 font-medium text-gray-900">Email</label>
                                 <div class="mt-2">
-                                    <input name="email" v-model="form.email" type="email" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6">
+                                    <InputText type="email" v-model="form.email" class="w-full"></InputText>
                                 </div>
                                 <span>
                                 <InputError :message="form.errors.email" class="mt-2"/>
@@ -77,6 +77,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
 import Breadcrumbs from "@/Components/Breadcrumbs.vue";
+import InputText from 'primevue/inputtext'
 
 const form = useForm({
     societe: '',

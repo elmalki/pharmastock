@@ -57,7 +57,7 @@ const removeProduct = (id) => {
 }
 
 function searchLabel(item) {
-    return item.label
+    return item.label+'('+item.barcode+')'
 }
 
 </script>
