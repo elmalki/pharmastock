@@ -1,121 +1,122 @@
+<script setup>
+import AppLayout from "@/Layouts/AppLayout.vue";
+import {useForm} from "@inertiajs/vue3";
+import SelectProductsOut from "@/Pages/Produits/SelectProductsOut.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Breadcrumbs from "@/Components/Breadcrumbs.vue";
+import InputText from "primevue/inputtext";
+import Editor from 'primevue/editor';
+
+const props = defineProps({number: Number});
+
+const form = useForm({
+    motifs: '',
+    fonctionnaire: '',
+    n_destockage: props.number,
+    produits: [],
+});
+
+const modules = {
+    toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{'list': 'ordered'}, {'list': 'bullet'}, {'list': 'check'}],
+        [{'indent': '-1'}, {'indent': '+1'}],
+        [{'direction': 'rtl'}],
+        [{'size': ['small', false, 'large', 'huge']}],
+        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+        [{'color': []}, {'background': []}],
+        [{'font': []}],
+        [{'align': []}],
+    ],
+};
+
+function selectedItems(items) {
+    items.forEach(item => {
+        if (!item.lots) {
+            axios.post('/api/getLots', {id: item.id}).then(response => {
+                response.data.forEach(el => el.sortie = 0);
+                item.lots = response.data;
+            });
+        }
+    });
+    form.produits = items;
+}
+
+function submit() {
+    form.post(route('destockages.store'));
+}
+</script>
+
 <template>
-    <AppLayout title="Modifier-Produit">
-        <div class="max-w-6xl mx-auto mt-4">
-            <InputText v-model="form.n_destockage" type="text" class="my-2 w-full" placeholder="N°"/>
-            <InputText v-model="form.fonctionnaire" type="text" class="my-2 w-full" placeholder="Fonctionnaire"/>
-            <SelectProductsOut @selected="(data)=>selectedItems(data)"></SelectProductsOut>
-            <Editor v-model="form.motifs" :modules="modules" editorStyle="height: 320px" />
-            <div v-for="item in form.produits" class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-                <div
-                    class="-ml-4 bg-amber-100 p-2 border-b border-b-cyan-500 pb-3 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                    <div class="ml-4 mt-2">
-                        <h3 class="text-base font-semibold text-gray-900">{{ item.label }}</h3>
+    <AppLayout title="Nouveau Destockage">
+        <div class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <Breadcrumbs :pages="[
+                {name: 'Destockages', href: route('destockages.index'), current: false},
+                {name: 'Nouveau Destockage', href: route('destockages.create'), current: true}
+            ]"/>
+
+            <div class="flex items-center justify-between mt-4 mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">Nouveau Destockage</h1>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">N°</label>
+                        <InputText v-model="form.n_destockage" type="text" class="w-full" placeholder="N°"/>
                     </div>
-                    <div class="ml-4 mt-2 shrink-0">
-                        <!--button type="button"
-                                class="relative inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Create new job
-                        </button-->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fonctionnaire</label>
+                        <InputText v-model="form.fonctionnaire" type="text" class="w-full" placeholder="Fonctionnaire"/>
                     </div>
                 </div>
-                <ul role="list" class="divide-y pt-5 bt-1 divide-gray-100">
-                    <li class="flex justify-between gap-x-6 py-3">
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm font-semibold text-gray-900">Lot</p>
-                            </div>
-                        </div>
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm font-semibold text-gray-900">En stock</p>
-                            </div>
-                        </div>
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm/6 font-semibold text-gray-900">Date péremption</p>
-                            </div>
-                        </div>
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm/6 font-semibold text-gray-900">Quantité</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="flex justify-between gap-x-6 py-3" v-for="lot in item.lots">
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm/6 font-semibold text-gray-900">Lot N°{{ lot.n_lot }}</p>
-                                <p class="mt-1 truncate text-xs/5 text-gray-500">
-                                    {{ lot.created_at.substring(0, 10) }}</p>
-                            </div>
-                        </div>
-                        <div class="flex min-w-0 gap-x-4">
-                            <div class="min-w-0 flex-auto">
-                                <p class="text-sm/6 font-semibold text-gray-900">{{ lot.qte }}</p>
-                            </div>
-                        </div>
-                        <div class="flex min-w-0 gap-x-4 text-center">
-                            <p class="text-sm/6 font-semibold text-gray-900">{{ lot.expirationDate ?? '-' }}</p>
-                        </div>
-                        <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                            <input type="number" v-model="lot.sortie" :max="lot.qte" min="0" id="name"
-                                   class=" w-full items-center border border-2 px-3 py-1.5 text-gray-900 placeholder:text-gray-500 focus:outline focus:outline-0 sm:text-sm/6 focus:border-b-green-700">
-                        </div>
-                    </li>
-                </ul>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Produits</label>
+                    <SelectProductsOut @selected="selectedItems"/>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Motifs</label>
+                    <Editor v-model="form.motifs" :modules="modules" editorStyle="height: 320px"/>
+                </div>
             </div>
-            <div class="mt-6 flex items-center justify-end gap-x-6" v-show="form.produits?.length">
-                <PrimaryButton
-                    class="ms-3"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                    @click="submit()"
-                >
+
+            <!-- Selected products with lots -->
+            <div v-for="item in form.produits" :key="item.id"
+                 class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                <div class="flex items-center justify-between px-6 py-3 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900">{{ item.label }}</h3>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    <div class="grid grid-cols-4 gap-4 px-6 py-2 bg-gray-50 border-b border-gray-200">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Lot</p>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">En stock</p>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Péremption</p>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Quantité</p>
+                    </div>
+                    <div v-for="lot in item.lots" :key="lot.id"
+                         class="grid grid-cols-4 gap-4 px-6 py-3 items-center hover:bg-gray-50/50">
+                        <div>
+                            <span class="font-mono text-sm font-medium text-gray-700">{{ lot.n_lot }}</span>
+                            <p class="mt-0.5 text-xs text-gray-400">{{ lot.created_at?.substring(0, 10) }}</p>
+                        </div>
+                        <span class="text-sm tabular-nums" :class="lot.qte <= 5 ? 'text-red-500 font-medium' : 'text-gray-700'">{{ lot.qte }}</span>
+                        <span class="text-sm text-gray-700">{{ lot.expirationDate?.substring?.(0, 10) ?? lot.expirationDate ?? '—' }}</span>
+                        <div>
+                            <InputText type="number" v-model.number="lot.sortie" :max="lot.qte" min="0" class="w-full" size="small"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action button row -->
+            <div v-show="form.produits?.length"
+                 class="flex items-center justify-end gap-x-3 pt-6 border-t border-gray-200 mt-6">
+                <PrimaryButton :class="{'opacity-25': form.processing}" :disabled="form.processing" @click="submit()">
                     Valider
                 </PrimaryButton>
             </div>
         </div>
     </AppLayout>
 </template>
-
-<script setup>
-import AppLayout from "@/Layouts/AppLayout.vue";
-import {useForm} from "@inertiajs/vue3";
-import SelectProductsOut from "@/Pages/Produits/SelectProductsOut.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import InputText from "primevue/inputtext";
-import Editor from 'primevue/editor';
-const props = defineProps({number:Number})
-const form = useForm({motifs:'',fonctionnaire:'',n_destockage:props.number,produits:[]})
-const modules = {
-    toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
-
-        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-    ],
-};
-
-function selectedItems(items) {
-    items.forEach(item => {
-        axios.post('/api/getLots', {id: item.id})
-            .then(response => {
-                response.data.forEach(el => el.sortie = 0)
-                item.lots = response.data
-            })
-    })
-    form.produits = items;
-}
-function submit(){
-    form.post('/destockages',form)
-}
-</script>
-<style scoped>
-</style>

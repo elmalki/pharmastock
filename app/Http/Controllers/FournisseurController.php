@@ -14,7 +14,7 @@ class FournisseurController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Fournisseurs/Index', ['items'=>Fournisseur::all()]);
+        return Inertia::render('Fournisseurs/Index', ['items'=>Fournisseur::withCount('commandes')->get()]);
     }
 
     /**

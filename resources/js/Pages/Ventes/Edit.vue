@@ -1,0 +1,256 @@
+<script setup>
+import {useForm, usePage, Link} from "@inertiajs/vue3";
+import {computed} from "vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
+import Breadcrumbs from "@/Components/Breadcrumbs.vue";
+import SelectClient from "@/Pages/Clients/SelectClient.vue";
+import SelectProductsOut from "@/Pages/Produits/SelectProductsOut.vue";
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+import DatePicker from 'primevue/datepicker';
+
+const props = defineProps({
+    vente: Object,
+    venteProduits: Array,
+});
+
+const page = usePage();
+const modes = page.props.enums.modes_paiement;
+
+const form = useForm({
+    n_facture: props.vente.n_facture ?? null,
+    client_id: props.vente.client_id ?? null,
+    date: props.vente.date ? new Date(props.vente.date) : null,
+    paiement: props.vente.paiement ?? null,
+    dateEcheance: props.vente.dateEcheance ? new Date(props.vente.dateEcheance) : null,
+    montantPaye: 0,
+    remise: props.vente.remise ?? 0,
+    produits: props.venteProduits ?? [],
+});
+
+function clientSelected(item) {
+    form.client_id = item.id;
+}
+
+const subtotal = computed(() => {
+    let s = 0;
+    form.produits.forEach(p => (p.lots || []).forEach(l => s += (l.sortie || 0) * (l.prix_vente || 0)));
+    return s;
+});
+const discountAmount = computed(() => (subtotal.value * (parseFloat(form.remise) || 0)) / 100);
+const total = computed(() => subtotal.value - discountAmount.value);
+const totalArticles = computed(() => form.produits.length);
+const totalUnites = computed(() => {
+    let s = 0;
+    form.produits.forEach(p => (p.lots || []).forEach(l => s += (l.sortie || 0)));
+    return s;
+});
+
+function fmt(v) {
+    return new Intl.NumberFormat('fr-MA', {style: 'currency', currency: 'MAD'}).format(v || 0);
+}
+
+function productSubtotal(product) {
+    return (product.lots || []).reduce((s, l) => s + (l.sortie || 0) * (l.prix_vente || 0), 0);
+}
+
+function increaseQuantity(ii, li) {
+    const lot = form.produits[ii].lots[li];
+    if (lot.sortie < lot.qte) lot.sortie++;
+}
+
+function decreaseQuantity(ii, li) {
+    const lot = form.produits[ii].lots[li];
+    if (lot.sortie > 0) lot.sortie--;
+}
+
+function removeProduct(i) {
+    form.produits.splice(i, 1);
+}
+
+async function selectedItems(items) {
+    const selectedIds = new Set(items.map(i => i.id));
+    const existingMap = new Map(form.produits.map(p => [p.id, p]));
+    const kept = form.produits.filter(p => selectedIds.has(p.id));
+    const newItems = items.filter(i => !existingMap.has(i.id));
+    await Promise.all(newItems.map(item =>
+        axios.post('/api/getLots', {id: item.id}).then(r => {
+            r.data.forEach(el => el.sortie = 1);
+            item.lots = r.data;
+        })
+    ));
+    form.produits = [...kept, ...newItems];
+}
+
+function submit() {
+    form.montantPaye = total.value;
+    form.put(route('ventes.update', props.vente.id));
+}
+</script>
+
+<template>
+    <AppLayout title="Modifier Vente">
+        <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto" @keydown.enter.prevent="">
+            <Breadcrumbs :pages="[
+                {name: 'Ventes', href: route('ventes.index'), current: false},
+                {name: 'Modifier Vente', href: route('ventes.edit', vente.id), current: true}
+            ]"/>
+
+            <div v-if="form.errors.error" class="mt-4 rounded-lg bg-red-50 p-4 border border-red-200">
+                <p class="text-sm text-red-700">{{ form.errors.error }}</p>
+            </div>
+
+            <div class="mt-4 lg:grid lg:grid-cols-12 lg:gap-6">
+                <!-- ===== LEFT: CART ===== -->
+                <div class="lg:col-span-5 xl:col-span-4 mt-6 lg:mt-0">
+                    <div class="lg:sticky lg:top-24 space-y-4">
+                        <!-- Order details -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Détails de la vente</h3>
+                                <span class="text-sm font-bold text-indigo-600 tabular-nums">N° {{ form.n_facture }}</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Client</label>
+                                <SelectClient :client="vente.client" @selected-client="clientSelected"/>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Date</label>
+                                    <DatePicker v-model="form.date" dateFormat="yy-mm-dd" class="w-full" size="small"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Échéance</label>
+                                    <DatePicker v-model="form.dateEcheance" dateFormat="yy-mm-dd" class="w-full" size="small"/>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Paiement</label>
+                                    <Select :options="modes" v-model="form.paiement" class="w-full" size="small"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Remise (%)</label>
+                                    <InputText v-model.number="form.remise" type="number" min="0" max="100" placeholder="0" class="w-full" size="small"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Totals -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="p-4 space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Sous-total</span>
+                                    <span class="font-medium tabular-nums text-gray-700">{{ fmt(subtotal) }}</span>
+                                </div>
+                                <div v-if="(form.remise || 0) > 0" class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Remise ({{ form.remise }}%)</span>
+                                    <span class="font-medium tabular-nums text-red-500">- {{ fmt(discountAmount) }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-slate-300">Total</span>
+                                    <span class="text-2xl font-bold tabular-nums text-white">{{ fmt(total) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3">
+                            <Link :href="route('ventes.index')" class="flex-1 text-center rounded-xl px-4 py-3 text-sm font-semibold text-gray-700 bg-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                Annuler
+                            </Link>
+                            <button type="button" @click="submit" :disabled="form.processing || form.produits.length === 0"
+                                    class="flex-[2] rounded-xl px-4 py-3 text-sm font-semibold text-white bg-emerald-600 shadow-sm hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                {{ form.processing ? 'Traitement...' : 'Enregistrer' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== RIGHT: SIDEBAR ===== -->
+                <div class="lg:col-span-7 xl:col-span-8 space-y-4">
+                    <!-- Product search -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ajouter des produits</label>
+                        <SelectProductsOut :produits="venteProduits" @selected="selectedItems"/>
+                    </div>
+
+                    <!-- Cart header -->
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-gray-900">
+                            Panier
+                            <span v-if="totalArticles > 0" class="ml-2 inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+                                {{ totalArticles }} article{{ totalArticles > 1 ? 's' : '' }} &middot; {{ totalUnites }} unité{{ totalUnites > 1 ? 's' : '' }}
+                            </span>
+                        </h2>
+                    </div>
+
+                    <!-- Empty cart -->
+                    <div v-if="form.produits.length === 0" class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-12 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                        </svg>
+                        <p class="mt-3 text-sm text-gray-500">Aucun produit dans le panier</p>
+                    </div>
+
+                    <!-- Cart items -->
+                    <div v-for="(item, ii) in form.produits" :key="item.id" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <!-- Product header -->
+                        <div class="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">{{ item.label }}</h3>
+                                    <p v-if="item.barcode" class="text-xs text-gray-400 font-mono">{{ item.barcode }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 flex-shrink-0">
+                                <span class="text-sm font-bold text-indigo-600 tabular-nums">{{ fmt(productSubtotal(item)) }}</span>
+                                <button type="button" @click="removeProduct(ii)" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Lots -->
+                        <div class="divide-y divide-gray-100">
+                            <div v-for="(lot, li) in item.lots" :key="li" class="flex items-center gap-4 px-4 py-2.5 hover:bg-gray-50/50">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-mono text-xs font-medium text-gray-700">{{ lot.n_lot }}</span>
+                                        <span class="text-xs text-gray-400">&middot;</span>
+                                        <span class="text-xs text-gray-500 tabular-nums">{{ fmt(lot.prix_vente || 0) }}</span>
+                                        <span class="text-xs text-gray-400">&middot;</span>
+                                        <span class="text-xs tabular-nums" :class="lot.qte <= 5 ? 'text-red-500 font-medium' : 'text-gray-400'">{{ lot.qte }} en stock</span>
+                                        <template v-if="lot.expirationDate">
+                                            <span class="text-xs text-gray-400">&middot;</span>
+                                            <span class="text-xs text-gray-400">Exp: {{ lot.expirationDate?.substring?.(0, 10) ?? lot.expirationDate }}</span>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <button type="button" @click="decreaseQuantity(ii, li)" :class="{'opacity-30 cursor-not-allowed': lot.sortie <= 0}" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-500">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+                                    </button>
+                                    <input type="number" v-model.number="lot.sortie" :max="lot.qte" min="0" class="w-12 text-center rounded-md border-gray-200 py-1 text-sm font-semibold tabular-nums focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
+                                    <button type="button" @click="increaseQuantity(ii, li)" :class="{'opacity-30 cursor-not-allowed': lot.sortie >= lot.qte}" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-500">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="w-24 text-right flex-shrink-0">
+                                    <span class="text-sm font-semibold tabular-nums" :class="(lot.sortie || 0) > 0 ? 'text-gray-900' : 'text-gray-300'">{{ fmt((lot.sortie || 0) * (lot.prix_vente || 0)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </AppLayout>
+</template>

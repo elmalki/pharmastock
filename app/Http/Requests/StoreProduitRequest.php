@@ -22,7 +22,20 @@ class StoreProduitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'label' => 'required|string|max:255',
+            'barcode' => 'nullable|string|max:255',
+            'dci' => 'nullable|string|max:255',
+            'forme' => 'nullable|string|max:100',
+            'dosage' => 'nullable|string|max:100',
+            'laboratoire' => 'nullable|string|max:255',
+            'unite' => 'nullable|string|max:50',
+            'description' => 'nullable|string|max:1000',
+            'perissable' => 'boolean',
+            'ordonnance_requise' => 'boolean',
+            'prix_public' => 'nullable|numeric|min:0',
+            'generated' => 'boolean',
+            'limit_command' => 'nullable|integer|min:0',
+            'categorie_id' => 'nullable|exists:categories,id',
         ];
     }
 }

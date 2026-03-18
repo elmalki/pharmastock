@@ -9,4 +9,9 @@ class Fournisseur extends Model
 {
     use HasFactory;
     protected $fillable = ['societe','contact','adresse','email'];
+
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class);
+    }
 }

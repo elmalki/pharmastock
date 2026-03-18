@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="fr">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard Pharmacie - Statistiques</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .gradient-blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-green {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .gradient-orange {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .gradient-purple {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Header -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-clinic-medical text-3xl text-indigo-600"></i>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Pharmacie Dashboard</h1>
+                    <p class="text-sm text-gray-500">Vue d'ensemble de votre activité</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <option>Aujourd'hui</option>
+                    <option>Cette semaine</option>
+                    <option>Ce mois</option>
+                    <option>Cette année</option>
+                    <option>Personnalisé</option>
+                </select>
+                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                    <i class="fas fa-download mr-2"></i>Exporter
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Cartes de statistiques principales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        <!-- Ventes du jour -->
+        <div class="stat-card bg-white rounded-xl shadow-md p-6 animate-fade-in">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 gradient-blue rounded-lg flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-white text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-semibold flex items-center">
+                        <i class="fas fa-arrow-up mr-1"></i>12.5%
+                    </span>
+            </div>
+            <h3 class="text-gray-500 text-sm font-medium mb-1">Ventes du jour</h3>
+            <p class="text-3xl font-bold text-gray-900 mb-2">142</p>
+            <p class="text-sm text-gray-500">+15 par rapport à hier</p>
+        </div>
+
+        <!-- Chiffre d'affaires -->
+        <div class="stat-card bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.1s">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 gradient-green rounded-lg flex items-center justify-center">
+                    <i class="fas fa-dollar-sign text-white text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-semibold flex items-center">
+                        <i class="fas fa-arrow-up mr-1"></i>8.2%
+                    </span>
+            </div>
+            <h3 class="text-gray-500 text-sm font-medium mb-1">Chiffre d'affaires</h3>
+            <p class="text-3xl font-bold text-gray-900 mb-2">45 280 MAD</p>
+            <p class="text-sm text-gray-500">Ce mois: 1.2M MAD</p>
+        </div>
+
+        <!-- Bénéfice -->
+        <div class="stat-card bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.2s">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 gradient-orange rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-white text-xl"></i>
+                </div>
+                <span class="text-green-500 text-sm font-semibold flex items-center">
+                        <i class="fas fa-arrow-up mr-1"></i>15.3%
+                    </span>
+            </div>
+            <h3 class="text-gray-500 text-sm font-medium mb-1">Bénéfice</h3>
+            <p class="text-3xl font-bold text-gray-900 mb-2">12 850 MAD</p>
+            <p class="text-sm text-gray-500">Marge: 28.4%</p>
+        </div>
+
+        <!-- Créances clients -->
+        <div class="stat-card bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.3s">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 gradient-purple rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-white text-xl"></i>
+                </div>
+                <span class="text-red-500 text-sm font-semibold flex items-center">
+                        <i class="fas fa-arrow-down mr-1"></i>3.1%
+                    </span>
+            </div>
+            <h3 class="text-gray-500 text-sm font-medium mb-1">Créances clients</h3>
+            <p class="text-3xl font-bold text-gray-900 mb-2">38 450 MAD</p>
+            <p class="text-sm text-gray-500">25 factures en attente</p>
+        </div>
+
+    </div>
+
+    <!-- Graphiques principaux -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Évolution des ventes -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.4s">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Évolution des ventes</h2>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium">Jour</button>
+                    <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium">Semaine</button>
+                    <button class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium">Mois</button>
+                </div>
+            </div>
+            <div id="salesChart" class="h-80"></div>
+        </div>
+
+        <!-- Répartition par catégorie -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.5s">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Ventes par catégorie</h2>
+                <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+            <div id="categoryChart" class="h-80"></div>
+        </div>
+
+    </div>
+
+    <!-- Statistiques détaillées -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+        <!-- Top produits -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.6s">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Top 5 Produits</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-pills text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Paracétamol 500mg</p>
+                            <p class="text-sm text-gray-500">245 unités</p>
+                        </div>
+                    </div>
+                    <span class="text-green-600 font-semibold">12 450 MAD</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-capsules text-pink-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Amoxicilline 1g</p>
+                            <p class="text-sm text-gray-500">189 unités</p>
+                        </div>
+                    </div>
+                    <span class="text-green-600 font-semibold">9 820 MAD</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tablet text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Doliprane 1000mg</p>
+                            <p class="text-sm text-gray-500">156 unités</p>
+                        </div>
+                    </div>
+                    <span class="text-green-600 font-semibold">7 650 MAD</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-prescription-bottle text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Vitamine C</p>
+                            <p class="text-sm text-gray-500">142 unités</p>
+                        </div>
+                    </div>
+                    <span class="text-green-600 font-semibold">5 320 MAD</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-syringe text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">Insuline</p>
+                            <p class="text-sm text-gray-500">98 unités</p>
+                        </div>
+                    </div>
+                    <span class="text-green-600 font-semibold">4 890 MAD</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients - Créances -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.7s">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Créances Clients</h2>
+                <span class="text-sm text-red-600 font-semibold">Total: 38,450 MAD</span>
+            </div>
+            <div class="space-y-4">
+                <div class="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Pharmacie Al Madina</p>
+                        <span class="text-red-600 font-bold">8 450 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance dépassée: 15 jours</p>
+                </div>
+                <div class="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Clinique Atlas</p>
+                        <span class="text-orange-600 font-bold">6 320 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: dans 3 jours</p>
+                </div>
+                <div class="border-l-4 border-yellow-500 pl-4 py-2 bg-yellow-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Hôpital Moulay Youssef</p>
+                        <span class="text-yellow-600 font-bold">12 850 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: dans 10 jours</p>
+                </div>
+                <div class="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Cabinet Dr. Alami</p>
+                        <span class="text-blue-600 font-bold">5 130 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: dans 20 jours</p>
+                </div>
+                <div class="border-l-4 border-green-500 pl-4 py-2 bg-green-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Autres clients</p>
+                        <span class="text-green-600 font-bold">5 700 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">12 factures en attente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fournisseurs - Dettes -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.8s">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Dettes Fournisseurs</h2>
+                <span class="text-sm text-orange-600 font-semibold">Total: 125,850 MAD</span>
+            </div>
+            <div class="space-y-4">
+                <div class="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Sanofi Maroc</p>
+                        <span class="text-red-600 font-bold">45 200 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance dépassée: 5 jours</p>
+                </div>
+                <div class="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Pfizer</p>
+                        <span class="text-orange-600 font-bold">38 450 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: demain</p>
+                </div>
+                <div class="border-l-4 border-yellow-500 pl-4 py-2 bg-yellow-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Novartis</p>
+                        <span class="text-yellow-600 font-bold">22 100 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: dans 7 jours</p>
+                </div>
+                <div class="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">GSK</p>
+                        <span class="text-blue-600 font-bold">15 300 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Échéance: dans 15 jours</p>
+                </div>
+                <div class="border-l-4 border-green-500 pl-4 py-2 bg-green-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="font-semibold text-gray-900">Autres fournisseurs</p>
+                        <span class="text-green-600 font-bold">4 800 MAD</span>
+                    </div>
+                    <p class="text-sm text-gray-500">8 factures à régler</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Alertes et activité récente -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Alertes stock -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 0.9s">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                    Alertes Stock
+                </h2>
+                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">15 alertes</span>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-ban text-red-600"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">Rupture de stock</p>
+                            <p class="text-sm text-gray-500">Aspirine 500mg</p>
+                        </div>
+                    </div>
+                    <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">Commander</button>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-exclamation-circle text-orange-600"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">Stock critique (< 10)</p>
+                            <p class="text-sm text-gray-500">Doliprane 500mg - Reste: 8 unités</p>
+                        </div>
+                    </div>
+                    <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">Commander</button>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-calendar-times text-yellow-600"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">Produits périmés</p>
+                            <p class="text-sm text-gray-500">3 lots expirés - Valeur: 2,450 MAD</p>
+                        </div>
+                    </div>
+                    <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">Voir</button>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-hourglass-half text-blue-600"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">Expire bientôt (< 30j)</p>
+                            <p class="text-sm text-gray-500">12 lots - Valeur: 15,800 MAD</p>
+                        </div>
+                    </div>
+                    <button class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">Voir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activité récente -->
+        <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 1s">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">
+                <i class="fas fa-history text-indigo-600 mr-2"></i>
+                Activité Récente
+            </h2>
+            <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">Nouvelle vente</p>
+                        <p class="text-sm text-gray-500">Facture #2847 - 1,250 MAD</p>
+                        <p class="text-xs text-gray-400">Il y a 5 minutes</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">Réception commande</p>
+                        <p class="text-sm text-gray-500">Sanofi - 45 produits reçus</p>
+                        <p class="text-xs text-gray-400">Il y a 25 minutes</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">Paiement reçu</p>
+                        <p class="text-sm text-gray-500">Pharmacie Al Madina - 5,000 MAD</p>
+                        <p class="text-xs text-gray-400">Il y a 1 heure</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">Alerte stock</p>
+                        <p class="text-sm text-gray-500">Paracétamol en rupture</p>
+                        <p class="text-xs text-gray-400">Il y a 2 heures</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900">Nouvelle commande</p>
+                        <p class="text-sm text-gray-500">Pfizer - 12,500 MAD</p>
+                        <p class="text-xs text-gray-400">Il y a 3 heures</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Graphique de trésorerie -->
+    <div class="bg-white rounded-xl shadow-md p-6 animate-fade-in" style="animation-delay: 1.1s">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold text-gray-900">Trésorerie & Flux de Trésorerie</h2>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Solde actuel:</span>
+                <span class="text-2xl font-bold text-green-600">285,450 MAD</span>
+            </div>
+        </div>
+        <div id="cashFlowChart" class="h-80"></div>
+    </div>
+
+</main>
+
+<script>
+    // Graphique d'évolution des ventes
+    Highcharts.chart('salesChart', {
+        chart: {
+            type: 'area',
+            height: 320
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+        },
+        yAxis: {
+            title: {
+                text: 'Montant (MAD)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueSuffix: ' MAD'
+        },
+        plotOptions: {
+            area: {
+                fillOpacity: 0.5
+            }
+        },
+        series: [{
+            name: 'Ventes',
+            data: [32000, 41000, 35000, 51000, 49000, 62000, 45000],
+            color: '#667eea'
+        }, {
+            name: 'Bénéfice',
+            data: [9000, 12000, 10000, 15000, 14000, 18000, 13000],
+            color: '#38f9d7'
+        }],
+        credits: {
+            enabled: false
+        }
+    });
+
+    // Graphique par catégorie (Pie Chart)
+    Highcharts.chart('categoryChart', {
+        chart: {
+            type: 'pie',
+            height: 320
+        },
+        title: {
+            text: null
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br>Montant: <b>{point.y} MAD</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f}%'
+                },
+                showInLegend: true
+            }
+        },
+        series: [{
+            name: 'Ventes',
+            colorByPoint: true,
+            data: [{
+                name: 'Médicaments',
+                y: 45280,
+                color: '#667eea'
+            }, {
+                name: 'Parapharmacie',
+                y: 18920,
+                color: '#f093fb'
+            }, {
+                name: 'Compléments',
+                y: 12450,
+                color: '#4facfe'
+            }, {
+                name: 'Matériel médical',
+                y: 8320,
+                color: '#43e97b'
+            }, {
+                name: 'Autres',
+                y: 5180,
+                color: '#feca57'
+            }]
+        }],
+        credits: {
+            enabled: false
+        }
+    });
+
+    // Graphique de flux de trésorerie
+    Highcharts.chart('cashFlowChart', {
+        chart: {
+            type: 'column',
+            height: 320
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            categories: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        },
+        yAxis: {
+            title: {
+                text: 'Montant (MAD)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueSuffix: ' MAD'
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: false
+                }
+            }
+        },
+        series: [{
+            name: 'Encaissements',
+            data: [180000, 195000, 220000, 210000, 245000, 270000, 285000, 265000, 290000, 310000, 295000, 320000],
+            color: '#43e97b'
+        }, {
+            name: 'Décaissements',
+            data: [125000, 135000, 148000, 142000, 165000, 178000, 192000, 185000, 198000, 215000, 205000, 225000],
+            color: '#f5576c'
+        }],
+        credits: {
+            enabled: false
+        }
+    });
+</script>
+
+</body>
+</html>

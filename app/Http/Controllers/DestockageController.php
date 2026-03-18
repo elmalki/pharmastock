@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDestockageRequest;
 use App\Http\Requests\UpdateDestockageRequest;
-use App\Models\Commande;
+use App\Models\CommandeProduit;
 use App\Models\Destockage;
 use App\Models\Produit;
 use App\Models\Setting;
@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\DashboardNotification;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -22,7 +23,7 @@ class DestockageController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Destockages/Index', ['items' => Destockage::paginate(10),'sort_fields'=>request()]);
+        return Inertia::render('Destockages/Index', ['items' => Destockage::with('produits', 'user')->paginate(10),'sort_fields'=>request()]);
     }
 
     /**
@@ -31,7 +32,7 @@ class DestockageController extends Controller
     public function create()
     {
         $setting = Setting::latest()->first();
-        if(date('Y')!=$setting->year){
+        if(!$setting || date('Y')!=$setting->year){
             $setting = Setting::create();
             $setting->refresh();
         }
@@ -43,30 +44,64 @@ class DestockageController extends Controller
      */
     public function store(StoreDestockageRequest $request)
     {
-        $destockage = Destockage::create(['n_destockage'=> $request->n_destockage,'fonctionnaire'=>$request->fonctionnaire,'motifs' => $request->motifs, 'user_id' => Auth::id()]);
-        $setting = Setting::latest()->first();
-        $setting->destockage_number = $setting->destockage_number + 1;
-        $setting->save();
-        $total = 0;
-        foreach ($request->produits as $produit) {
-            foreach ($produit['lots'] as $lot) {
-                if($lot['sortie']==0){
-                    continue;
-                }
-                $total+=$lot['sortie'];
-                $destockage->produits()->attach($lot['produit_id'], ['qte' => $lot['sortie']]);
-                Commande::find($lot['commande_id'])->produits()->updateExistingPivot($lot['produit_id'], ['qte' => max($lot['qte'] - $lot['sortie'], 0)]);
-                $produit = Produit::find($lot['produit_id']);
-                if ($produit->enRupture()) {
-                    User::all()->each(function (User $user) use ($produit) {
-                        $user->notify(new DashboardNotification($produit));
-                    });
+        DB::beginTransaction();
+
+        try {
+            $destockage = Destockage::create([
+                'n_destockage' => $request->n_destockage,
+                'fonctionnaire' => $request->fonctionnaire,
+                'motifs' => $request->motifs,
+                'user_id' => Auth::id(),
+            ]);
+
+            $setting = Setting::latest()->first();
+            $setting->destockage_number = $setting->destockage_number + 1;
+            $setting->save();
+
+            $total = 0;
+            foreach ($request->produits as $produit) {
+                foreach ($produit['lots'] as $lotData) {
+                    if ($lotData['sortie'] == 0) {
+                        continue;
+                    }
+
+                    $lot = CommandeProduit::where('produit_id', $lotData['produit_id'])
+                        ->where('commande_id', $lotData['commande_id'])
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$lot || $lot->qte < $lotData['sortie']) {
+                        $lotName = $lot?->n_lot ?? 'inconnu';
+                        throw new \Exception("Stock insuffisant pour le lot {$lotName}.");
+                    }
+
+                    $total += $lotData['sortie'];
+                    $destockage->produits()->attach($lotData['produit_id'], ['qte' => $lotData['sortie']]);
+                    $lot->decrement('qte', $lotData['sortie']);
+
+                    $produitModel = Produit::find($lotData['produit_id']);
+                    if ($produitModel->enRupture()) {
+                        User::all()->each(function (User $user) use ($produitModel) {
+                            $user->notify(new DashboardNotification($produitModel));
+                        });
+                    }
                 }
             }
+
+            if ($total == 0) {
+                $destockage->delete();
+            }
+
+            DB::commit();
+
+            return Redirect::route('destockages.index')->banner('Destockage effectué avec succès!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()
+                ->withErrors(['error' => 'Erreur lors du destockage: ' . $e->getMessage()])
+                ->withInput();
         }
-        if($total==0)
-            $destockage->delete();
-        return Redirect::route('destockages.index')->banner('Destockage effectué avec succès!');
     }
 
     /**
@@ -105,7 +140,7 @@ class DestockageController extends Controller
     {
         return \Barryvdh\DomPDF\Facade\Pdf::loadView(
             'pdf.decharge',
-            ['destockage'=>$destockage]
+            ['destockage'=>$destockage->load('produits', 'user')]
         )
             // ->setPaper('A4', 'landscape')
             ->stream();

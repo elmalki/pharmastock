@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ModePaiement;
+use App\Enums\SituationCommande;
+use App\Enums\StatutVente;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,7 +41,12 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'notifications'=>fn()=>auth()->user()?->unreadNotifications,
             'permissions'=>fn()=>auth()->user()?->getPermissionsViaRoles()->pluck('name')->toArray(),
-            'roles'=>fn()=>auth()->user()?->getRoleNames()
+            'roles'=>fn()=>auth()->user()?->getRoleNames(),
+            'enums' => [
+                'modes_paiement' => ModePaiement::values(),
+                'statuts_vente' => StatutVente::values(),
+                'situations_commande' => SituationCommande::values(),
+            ],
         ]);
     }
 }

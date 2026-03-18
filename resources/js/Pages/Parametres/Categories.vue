@@ -112,12 +112,7 @@
             </v-btn>
           </v-snackbar>
 
-          <remove
-            v-if="dialog_delete"
-            title="Supprimer la catégorie"
-            @confirmDelete="confirmDelete"
-            @cancelDelete="dialog_delete = false"
-          ></remove>
+          <!-- delete dialog removed -->
         </v-row>
       </div>
     </div>
@@ -127,7 +122,7 @@
 <script setup>
 import {ref, useAttrs} from "vue";
 const page = useAttrs()
-import remove from "../remove.vue";
+
 import AppLayout from "@/Layouts/AppLayout.vue";
 defineProps({ items: Array,message });
 const dialog = ref(false);

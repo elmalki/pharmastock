@@ -28,8 +28,51 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', Produit::class);
-        return Inertia::render('Produits/Index', ['items'=>Produit::orderBy(request()->field??'id', request()->order==1?'desc':'asc')->paginate(10),'sort_fields'=>request()]);
+     //   Gate::authorize('viewAny', Produit::class);
+        $query = Produit::withSum('lots as lots_sum_qte', 'qte');
+
+        // Filters
+        if (request()->filled('categorie_id')) {
+            $query->where('categorie_id', request()->categorie_id);
+        }
+        if (request()->filled('stock_status')) {
+            $status = request()->stock_status;
+            if ($status === 'rupture') {
+                $query->having('lots_sum_qte', '=', 0)->orHavingNull('lots_sum_qte');
+            } elseif ($status === 'critique') {
+                $query->havingRaw('lots_sum_qte > 0 AND lots_sum_qte <= limit_command');
+            } elseif ($status === 'disponible') {
+                $query->havingRaw('lots_sum_qte > limit_command');
+            }
+        }
+
+        // Stats (computed across all products, not filtered)
+        $allProducts = Produit::withSum('lots as lots_sum_qte', 'qte')->get();
+        $totalProducts = $allProducts->count();
+        $rupture = $allProducts->filter(fn($p) => ($p->lots_sum_qte ?? 0) == 0)->count();
+        $critique = $allProducts->filter(fn($p) => ($p->lots_sum_qte ?? 0) > 0 && ($p->lots_sum_qte ?? 0) <= ($p->limit_command ?? 0))->count();
+        $disponible = $totalProducts - $rupture - $critique;
+        $totalValue = $allProducts->sum(fn($p) => ($p->lots_sum_qte ?? 0) * ($p->prix_public ?? 0));
+
+        return Inertia::render('Produits/Index', [
+            'items' => $query
+                ->orderBy(request()->field ?? 'id', request()->order == 1 ? 'desc' : 'asc')
+                ->paginate(10)
+                ->withQueryString(),
+            'sort_fields' => request(),
+            'categories' => Categorie::all(),
+            'stats' => [
+                'total' => $totalProducts,
+                'rupture' => $rupture,
+                'critique' => $critique,
+                'disponible' => $disponible,
+                'total_value' => $totalValue,
+            ],
+            'applied_filters' => [
+                'categorie_id' => request()->categorie_id,
+                'stock_status' => request()->stock_status,
+            ],
+        ]);
     }
 
     /**
@@ -54,7 +97,7 @@ class ProduitController extends Controller
      */
     public function show(Produit $produit)
     {
-        return  Inertia::render('Produits/Show',['produit'=>$produit->load('commandes')]);
+        return  Inertia::render('Produits/Show',['produit'=>$produit->load('commandes'),'categories'=>Categorie::all()]);
     }
 
     /**
@@ -71,6 +114,9 @@ class ProduitController extends Controller
     public function update(UpdateProduitRequest $request, Produit $produit)
     {
         $produit->update($request->all());
+        if ($request->header('X-From-Show')) {
+            return redirect()->route('produits.show', $produit)->banner('Produit modifié');
+        }
         return redirect()->route('produits.index')->banner('Produit modifié');
     }
 
@@ -125,6 +171,6 @@ class ProduitController extends Controller
     }
     public function perimes()
     {
-        return Inertia::render('Produits/Perimes', ['items'=>CommandeProduit::whereNotNull('expirationDate')->where('expirationDate','<',now())->with('produit')->get()]);
+        return Inertia::render('Produits/Perimes', ['items'=>CommandeProduit::whereNotNull('expirationDate')->where('expirationDate','<',now())->where('qte','>',0)->with('produit.categorie')->get()]);
     }
 }

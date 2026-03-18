@@ -15,7 +15,43 @@ class CommandeController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Commandes/Index', ['items'=>Commande::orderBy(request()->field??'id', request()->order==1?'desc':'asc')->paginate(10),'sort_fields'=>request()]);
+        $query = Commande::with('fournisseur');
+
+        if (request()->filled('situation')) {
+            $query->where('situation', request()->situation);
+        }
+        if (request()->filled('paiement')) {
+            $query->where('paiement', request()->paiement);
+        }
+        if (request()->filled('date_from')) {
+            $query->whereDate('date', '>=', request()->date_from);
+        }
+        if (request()->filled('date_to')) {
+            $query->whereDate('date', '<=', request()->date_to);
+        }
+
+        $allCommandes = Commande::all();
+
+        return Inertia::render('Commandes/Index', [
+            'items' => $query
+                ->orderBy(request()->field ?? 'id', request()->order == 1 ? 'desc' : 'asc')
+                ->paginate(10)
+                ->withQueryString(),
+            'sort_fields' => request(),
+            'stats' => [
+                'total' => $allCommandes->count(),
+                'montant' => $allCommandes->sum('montantPaye'),
+                'payees' => $allCommandes->where('situation', 'Payé')->count(),
+                'en_cours' => $allCommandes->where('situation', '!=', 'Payé')->count(),
+                'overdue' => $allCommandes->filter(fn($c) => $c->situation !== 'Payé' && $c->dateEcheance && \Carbon\Carbon::parse($c->dateEcheance)->isPast())->count(),
+            ],
+            'applied_filters' => [
+                'situation' => request()->situation,
+                'paiement' => request()->paiement,
+                'date_from' => request()->date_from,
+                'date_to' => request()->date_to,
+            ],
+        ]);
     }
 
     /**
@@ -59,7 +95,7 @@ class CommandeController extends Controller
      */
     public function show(Commande $commande)
     {
-        return Inertia::render('Commandes/Show', ['commande'=>$commande]);
+        return Inertia::render('Commandes/Show', ['commande'=>$commande->load('produits', 'fournisseur')]);
     }
 
     /**
@@ -67,7 +103,7 @@ class CommandeController extends Controller
      */
     public function edit(Commande $commande)
     {
-        return Inertia::render('Commandes/Edit', ['commande'=>$commande]);
+        return Inertia::render('Commandes/Edit', ['commande'=>$commande->load('produits', 'fournisseur')]);
     }
 
     /**

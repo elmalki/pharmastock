@@ -2,24 +2,31 @@
 
 namespace App\Models;
 
+use App\Enums\ModePaiement;
+use App\Enums\SituationCommande;
 use App\Filters\StartDate;
 use App\Filters\EndDate;
 use App\Filters\NBon;
 use App\Filters\NFacture;
 use App\Filters\FournisseurId;
 use Carbon\Carbon;
-use Dompdf\Css\Content\Attr;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pipeline\Pipeline;
 
 class Commande extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = ['n_bon','n_facture','fournisseur_id','date','dateEcheance','paiement','situation'];
-    protected $with = ['produits','fournisseur'];
+    protected $fillable = ['n_bon','n_facture','fournisseur_id','date','dateEcheance','paiement','situation','montantPaye'];
+
+    protected $casts = [
+        'paiement' => ModePaiement::class,
+        'situation' => SituationCommande::class,
+    ];
+    protected $with = [];
     //protected $appends = ['total'];
 
     public function date():Attribute

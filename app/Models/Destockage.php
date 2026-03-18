@@ -10,7 +10,7 @@ class Destockage extends Model
 {
     use HasFactory;
     protected $fillable = ['user_id','motifs','fonctionnaire','n_destockage'];
-    protected $with = ['produits','user'];
+    protected $with = [];
     public function user(){
         return $this->belongsTo(User::class);
     }

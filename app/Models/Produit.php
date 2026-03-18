@@ -7,45 +7,55 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Milon\Barcode\DNS1D;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Produit extends Model
 {
-    use HasFactory, LogsActivity;
-    protected $fillable = ['label', 'description', 'perissable', 'limit_command','generated','categorie_id'];
-   protected $with = ['categorie'];
-    protected $appends = ['remise', 'qte', 'qtePerime'];
+    use HasFactory, LogsActivity, SoftDeletes;
+    protected $fillable = [
+        'barcode', 'label', 'dci', 'forme', 'dosage', 'laboratoire',
+        'unite', 'description', 'perissable', 'ordonnance_requise',
+        'prix_public', 'limit_command', 'generated', 'categorie_id',
+    ];
+    protected $with = ['categorie'];
+    protected $appends = ['qte', 'qtePerime'];
+
     public function commandes()
     {
         return $this->belongsToMany(Commande::class, 'commande_produit', 'produit_id','commande_id')->withPivot('n_lot', 'qte','qte_achete','tva', 'prix_achat','prix_vente', 'expirationDate')->withTimestamps();
     }
-    public function enRupture():bool{
-        return CommandeProduit::where('produit_id', $this->attributes['id'])->sum('qte')<$this->attributes['limit_command'];
-    }
-    public function getRemiseAttribute()
+
+    public function lots()
     {
-        return 0;
+        return $this->hasMany(CommandeProduit::class, 'produit_id');
     }
 
     public function categorie()
     {
         return $this->belongsTo(Categorie::class,'categorie_id');
     }
+
+    public function enRupture(): bool
+    {
+        $qte = $this->lots_sum_qte ?? $this->lots()->sum('qte');
+        return $qte < ($this->attributes['limit_command'] ?? 0);
+    }
+
     public function getQteAttribute()
     {
-        return CommandeProduit::where('produit_id', $this->attributes['id'])->sum('qte');
+        return $this->lots_sum_qte ?? $this->lots()->sum('qte');
     }
 
     public function getQtePerimeAttribute()
     {
-        return CommandeProduit::where('produit_id', $this->attributes['id'])->where('expirationDate', '<', Carbon::now())->sum('qte');
+        return $this->lots_perime_sum ?? $this->lots()
+            ->where('expirationDate', '<', Carbon::now())
+            ->sum('qte');
     }
-    public function lotPerime($jour = 1)
-    {
-        return Entree::where('produit_id', $this->attributes['id'])->where('expirationDate', '<', Carbon::now()->addDays($jour))->pluck('n_lot')->toArray();
-    }
+
     public function checkAndNotify()
     {
         if ($this->limit_command && $this->qte < $this->limit_command) {

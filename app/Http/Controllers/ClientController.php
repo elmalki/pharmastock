@@ -14,7 +14,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Clients/Index', ['items'=>Client::all()]);
+        return Inertia::render('Clients/Index', ['items'=>Client::withCount('ventes')->get()]);
     }
 
     /**

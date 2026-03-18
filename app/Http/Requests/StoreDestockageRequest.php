@@ -22,7 +22,15 @@ class StoreDestockageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'n_destockage' => 'required|string|max:255',
+            'fonctionnaire' => 'nullable|string|max:255',
+            'motifs' => 'required|string|max:500',
+            'produits' => 'required|array|min:1',
+            'produits.*.lots' => 'required|array|min:1',
+            'produits.*.lots.*.produit_id' => 'required|exists:produits,id',
+            'produits.*.lots.*.commande_id' => 'required|integer',
+            'produits.*.lots.*.sortie' => 'required|integer|min:0',
+            'produits.*.lots.*.qte' => 'required|integer|min:0',
         ];
     }
 }

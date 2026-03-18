@@ -22,7 +22,21 @@ class StoreCommandeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'n_bon' => 'required|string|max:255',
+            'n_facture' => 'nullable|string|max:255',
+            'fournisseur_id' => 'required|exists:fournisseurs,id',
+            'date' => 'required|date',
+            'paiement' => 'required|string',
+            'dateEcheance' => 'nullable|date',
+            'situation' => 'nullable|string',
+            'produits' => 'required|array|min:1',
+            'produits.*.id' => 'required|exists:produits,id',
+            'produits.*.entree.qte' => 'required|integer|min:1',
+            'produits.*.entree.prix_achat' => 'required|numeric|min:0',
+            'produits.*.entree.prix_vente' => 'required|numeric|min:0',
+            'produits.*.entree.n_lot' => 'nullable|string|max:255',
+            'produits.*.entree.expirationDate' => 'nullable|date',
+            'produits.*.entree.tva' => 'nullable|integer|min:0|max:100',
         ];
     }
 }

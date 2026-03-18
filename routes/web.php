@@ -29,6 +29,7 @@ Route::middleware([
     Route::resource('categories', CategoryController::class);
     Route::resource('fournisseurs', \App\Http\Controllers\FournisseurController::class);
     Route::resource('clients', \App\Http\Controllers\ClientController::class);
+    Route::get('ventes/{vente}/pdf', [\App\Http\Controllers\VenteController::class, 'pdf'])->name('ventes.pdf');
     Route::resource('ventes', \App\Http\Controllers\VenteController::class);
     Route::resource('produits', \App\Http\Controllers\ProduitController::class);
     Route::resource('commandes', \App\Http\Controllers\CommandeController::class);

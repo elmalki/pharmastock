@@ -7,6 +7,7 @@
                 chips
                 closable-chips
                 return-object
+                item-value="id"
                 v-model="selected"
                 :items="items"
                 :item-title="searchLabel"
