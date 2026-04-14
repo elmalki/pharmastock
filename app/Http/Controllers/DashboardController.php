@@ -288,13 +288,20 @@ class DashboardController extends Controller
 
     private function getSalesChartData(): array
     {
-        $caExpr = 'COALESCE(SUM(COALESCE(subtotal, 0) - COALESCE(remise_amount, 0)), 0)';
-        $benefExpr = 'COALESCE(SUM(COALESCE(benefice, 0)), 0)';
+        $caExpr = 'COALESCE(SUM(COALESCE(ventes.subtotal, 0) - COALESCE(ventes.remise_amount, 0)), 0)';
 
         // — Daily: last 7 days —
         $dailyRaw = Vente::where('date', '>=', now()->subDays(6)->startOfDay())
-            ->selectRaw("DATE(date) as d, $caExpr as ca, $benefExpr as benefice")
-            ->groupByRaw('DATE(date)')
+            ->selectRaw("DATE(ventes.date) as d, $caExpr as ca")
+            ->groupByRaw('DATE(ventes.date)')
+            ->get()->keyBy('d');
+
+        $dailyBenefRaw = DB::table('vente_produit as vp')
+            ->join('ventes', 'ventes.id', '=', 'vp.vente_id')
+            ->whereNull('ventes.deleted_at')
+            ->where('ventes.date', '>=', now()->subDays(6)->startOfDay())
+            ->selectRaw('DATE(ventes.date) as d, COALESCE(SUM((vp.prix - vp.prix_achat) * vp.qte), 0) as benefice')
+            ->groupByRaw('DATE(ventes.date)')
             ->get()->keyBy('d');
 
         $daily = ['categories' => [], 'ca' => [], 'benefice' => []];
@@ -303,30 +310,44 @@ class DashboardController extends Controller
             $key = $date->format('Y-m-d');
             $daily['categories'][] = self::DAY_NAMES[$date->dayOfWeek];
             $daily['ca'][] = (float) ($dailyRaw[$key]->ca ?? 0);
-            $daily['benefice'][] = (float) ($dailyRaw[$key]->benefice ?? 0);
+            $daily['benefice'][] = (float) ($dailyBenefRaw[$key]->benefice ?? 0);
         }
 
         // — Weekly: last 8 weeks —
         $weeklyRaw = Vente::where('date', '>=', now()->subWeeks(7)->startOfWeek())
-            ->selectRaw("YEARWEEK(date, 1) as yw, $caExpr as ca, $benefExpr as benefice")
-            ->groupByRaw('YEARWEEK(date, 1)')
+            ->selectRaw("YEARWEEK(ventes.date, 1) as yw, $caExpr as ca")
+            ->groupByRaw('YEARWEEK(ventes.date, 1)')
+            ->get()->keyBy('yw');
+
+        $weeklyBenefRaw = DB::table('vente_produit as vp')
+            ->join('ventes', 'ventes.id', '=', 'vp.vente_id')
+            ->whereNull('ventes.deleted_at')
+            ->where('ventes.date', '>=', now()->subWeeks(7)->startOfWeek())
+            ->selectRaw('YEARWEEK(ventes.date, 1) as yw, COALESCE(SUM((vp.prix - vp.prix_achat) * vp.qte), 0) as benefice')
+            ->groupByRaw('YEARWEEK(ventes.date, 1)')
             ->get()->keyBy('yw');
 
         $weekly = ['categories' => [], 'ca' => [], 'benefice' => []];
         for ($i = 7; $i >= 0; $i--) {
             $week = now()->subWeeks($i);
-            $yw = $week->format('oW'); // ISO year + week
-            // MySQL YEARWEEK with mode 1 returns YYYYWW
             $ywMysql = $week->year . str_pad($week->isoWeek(), 2, '0', STR_PAD_LEFT);
             $weekly['categories'][] = 'S' . $week->isoWeek();
             $weekly['ca'][] = (float) ($weeklyRaw[$ywMysql]->ca ?? 0);
-            $weekly['benefice'][] = (float) ($weeklyRaw[$ywMysql]->benefice ?? 0);
+            $weekly['benefice'][] = (float) ($weeklyBenefRaw[$ywMysql]->benefice ?? 0);
         }
 
         // — Monthly: last 12 months —
         $monthlyRaw = Vente::where('date', '>=', now()->subMonths(11)->startOfMonth())
-            ->selectRaw("DATE_FORMAT(date, '%Y-%m') as ym, $caExpr as ca, $benefExpr as benefice")
-            ->groupByRaw("DATE_FORMAT(date, '%Y-%m')")
+            ->selectRaw("DATE_FORMAT(ventes.date, '%Y-%m') as ym, $caExpr as ca")
+            ->groupByRaw("DATE_FORMAT(ventes.date, '%Y-%m')")
+            ->get()->keyBy('ym');
+
+        $monthlyBenefRaw = DB::table('vente_produit as vp')
+            ->join('ventes', 'ventes.id', '=', 'vp.vente_id')
+            ->whereNull('ventes.deleted_at')
+            ->where('ventes.date', '>=', now()->subMonths(11)->startOfMonth())
+            ->selectRaw("DATE_FORMAT(ventes.date, '%Y-%m') as ym, COALESCE(SUM((vp.prix - vp.prix_achat) * vp.qte), 0) as benefice")
+            ->groupByRaw("DATE_FORMAT(ventes.date, '%Y-%m')")
             ->get()->keyBy('ym');
 
         $monthly = ['categories' => [], 'ca' => [], 'benefice' => []];
@@ -335,7 +356,7 @@ class DashboardController extends Controller
             $key = $month->format('Y-m');
             $monthly['categories'][] = self::MONTH_NAMES[$month->month - 1];
             $monthly['ca'][] = (float) ($monthlyRaw[$key]->ca ?? 0);
-            $monthly['benefice'][] = (float) ($monthlyRaw[$key]->benefice ?? 0);
+            $monthly['benefice'][] = (float) ($monthlyBenefRaw[$key]->benefice ?? 0);
         }
 
         return compact('daily', 'weekly', 'monthly');

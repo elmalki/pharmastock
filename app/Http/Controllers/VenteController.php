@@ -36,7 +36,11 @@ class VenteController extends Controller
         // Stats (computed across all ventes, not filtered)
         $allVentes = Vente::all();
         $totalCA = $allVentes->sum(fn($v) => $v->total);
-        $totalBenefice = $allVentes->sum('benefice');
+        $totalBenefice = (float) DB::table('vente_produit')
+            ->join('ventes', 'vente_produit.vente_id', '=', 'ventes.id')
+            ->whereNull('ventes.deleted_at')
+            ->selectRaw('COALESCE(SUM((vente_produit.prix - vente_produit.prix_achat) * vente_produit.qte), 0) as v')
+            ->value('v');
         $totalImpayes = $allVentes->where('statut', 'partiel')->count();
         $totalResteImpayes = $allVentes->sum('reste');
 
@@ -88,6 +92,46 @@ class VenteController extends Controller
     }
 
     /**
+     * Handle a returned product line (negative sortie): decrement the qte
+     * on the latest matching vente_produit row and restock the lot.
+     */
+    private function applyReturn(array $produit, array $lotData, CommandeProduit $lot, ?int $clientId, ?int $excludeVenteId = null): void
+    {
+        $returnedQty = abs($lotData['sortie']);
+
+        $query = DB::table('vente_produit as vp')
+            ->join('ventes as v', 'v.id', '=', 'vp.vente_id')
+            ->where('vp.produit_id', $produit['id'])
+            ->where('vp.qte', '>=', $returnedQty);
+
+        if ($clientId !== null) {
+            $query->where('v.client_id', $clientId);
+        } else {
+            $query->whereNull('v.client_id');
+        }
+
+        if ($excludeVenteId !== null) {
+            $query->where('v.id', '!=', $excludeVenteId);
+        }
+
+        $latest = $query->orderBy('v.id', 'desc')
+            ->select('vp.vente_id', 'vp.produit_id', 'vp.lot_id')
+            ->first();
+
+        if (!$latest) {
+            throw new \Exception("Aucune vente précédente trouvée contenant au moins {$returnedQty} unités de {$produit['label']} pour ce client.");
+        }
+
+        DB::table('vente_produit')
+            ->where('vente_id', $latest->vente_id)
+            ->where('produit_id', $latest->produit_id)
+            ->where('lot_id', $latest->lot_id)
+            ->decrement('qte', $returnedQty);
+
+        $lot->increment('qte', $returnedQty);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreVenteRequest $request)
@@ -127,6 +171,8 @@ class VenteController extends Controller
             // 4. Traiter chaque produit et ses lots
             foreach ($request->produits as $produit) {
                 foreach ($produit['lots'] as $lotData) {
+                    if ($lotData['sortie'] == 0) continue;
+
                     // Vérifier que le lot existe et a assez de stock
                     $lot = CommandeProduit::where('n_lot', $lotData['n_lot'])
                         ->where('produit_id', $produit['id'])
@@ -135,6 +181,12 @@ class VenteController extends Controller
 
                     if (!$lot) {
                         throw new \Exception("Lot {$lotData['n_lot']} introuvable pour le produit {$produit['label']}");
+                    }
+
+                    // Retour d'un médicament (avoir)
+                    if ($lotData['sortie'] < 0) {
+                        $this->applyReturn($produit, $lotData, $lot, $request->client_id);
+                        continue;
                     }
 
                     if ($lot->qte < $lotData['sortie']) {
@@ -279,7 +331,7 @@ class VenteController extends Controller
             $subtotal = 0;
             foreach ($request->produits as $produit) {
                 foreach ($produit['lots'] as $lot) {
-                    if ($lot['sortie'] <= 0) continue;
+                    if ($lot['sortie'] == 0) continue;
                     $subtotal += $lot['sortie'] * $lot['prix_vente'];
                 }
             }
@@ -306,7 +358,7 @@ class VenteController extends Controller
             // 5. Attach new products and decrement stock
             foreach ($request->produits as $produit) {
                 foreach ($produit['lots'] as $lotData) {
-                    if ($lotData['sortie'] <= 0) continue;
+                    if ($lotData['sortie'] == 0) continue;
 
                     $lot = CommandeProduit::where('n_lot', $lotData['n_lot'])
                         ->where('produit_id', $produit['id'])
@@ -315,6 +367,12 @@ class VenteController extends Controller
 
                     if (!$lot) {
                         throw new \Exception("Lot {$lotData['n_lot']} introuvable pour le produit {$produit['label']}");
+                    }
+
+                    // Retour d'un médicament (avoir)
+                    if ($lotData['sortie'] < 0) {
+                        $this->applyReturn($produit, $lotData, $lot, $request->client_id, $vente->id);
+                        continue;
                     }
 
                     if ($lot->qte < $lotData['sortie']) {

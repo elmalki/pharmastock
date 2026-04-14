@@ -1,10 +1,10 @@
 <script setup>
 import {useForm, usePage, Link} from "@inertiajs/vue3";
-import {computed} from "vue";
+import {computed, onMounted, ref} from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Breadcrumbs from "@/Components/Breadcrumbs.vue";
-import SelectClient from "@/Pages/Clients/SelectClient.vue";
 import SelectProductsOut from "@/Pages/Produits/SelectProductsOut.vue";
+import AutoComplete from 'primevue/autocomplete';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
@@ -28,8 +28,29 @@ const form = useForm({
     produits: props.venteProduits ?? [],
 });
 
-function clientSelected(item) {
-    form.client_id = item.id;
+const allClients = ref([]);
+const clientSuggestions = ref([]);
+const selectedClient = ref(props.vente.client ?? null);
+
+onMounted(async () => {
+    const res = await axios.get('/api/clients');
+    allClients.value = res.data;
+    if (!selectedClient.value && form.client_id) {
+        const current = allClients.value.find(c => c.id === form.client_id);
+        if (current) selectedClient.value = current;
+    }
+});
+
+function searchClients(event) {
+    const query = (event.query || '').toLowerCase();
+    clientSuggestions.value = allClients.value.filter(c =>
+        c.nom.toLowerCase().includes(query) ||
+        (c.tel && c.tel.toLowerCase().includes(query))
+    ).slice(0, 10);
+}
+
+function onClientSelect(e) {
+    if (e.value) form.client_id = e.value.id;
 }
 
 const subtotal = computed(() => {
@@ -61,7 +82,7 @@ function increaseQuantity(ii, li) {
 
 function decreaseQuantity(ii, li) {
     const lot = form.produits[ii].lots[li];
-    if (lot.sortie > 0) lot.sortie--;
+    lot.sortie--;
 }
 
 function removeProduct(i) {
@@ -112,7 +133,32 @@ function submit() {
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 mb-1">Client</label>
-                                <SelectClient :client="vente.client" @selected-client="clientSelected"/>
+                                <AutoComplete
+                                    v-model="selectedClient"
+                                    :suggestions="clientSuggestions"
+                                    @complete="searchClients"
+                                    @item-select="onClientSelect"
+                                    optionLabel="nom"
+                                    placeholder="Rechercher un client..."
+                                    class="w-full"
+                                    size="small"
+                                    dropdown
+                                    forceSelection
+                                    :pt="{
+                                        root: { class: 'w-full' },
+                                        pcInputText: { root: { class: 'w-full' } }
+                                    }"
+                                >
+                                    <template #option="{ option }">
+                                        <div class="flex items-center justify-between gap-3 py-0.5">
+                                            <span class="text-sm font-medium text-gray-900 truncate">{{ option.nom }}</span>
+                                            <span v-if="option.tel" class="text-xs text-gray-400 font-mono">{{ option.tel }}</span>
+                                        </div>
+                                    </template>
+                                    <template #empty>
+                                        <div class="px-4 py-2 text-sm text-gray-400 text-center">Aucun client trouvé</div>
+                                    </template>
+                                </AutoComplete>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -226,7 +272,7 @@ function submit() {
                                         <span class="text-xs text-gray-400">&middot;</span>
                                         <span class="text-xs text-gray-500 tabular-nums">{{ fmt(lot.prix_vente || 0) }}</span>
                                         <span class="text-xs text-gray-400">&middot;</span>
-                                        <span class="text-xs tabular-nums" :class="lot.qte <= 5 ? 'text-red-500 font-medium' : 'text-gray-400'">{{ lot.qte }} en stock</span>
+                                        <span class="text-xs tabular-nums" :class="(lot.qte - lot.sortie) <= 5 ? 'text-red-500 font-medium' : 'text-gray-400'">{{ lot.qte - (lot.sortie || 0) }} en stock</span>
                                         <template v-if="lot.expirationDate">
                                             <span class="text-xs text-gray-400">&middot;</span>
                                             <span class="text-xs text-gray-400">Exp: {{ lot.expirationDate?.substring?.(0, 10) ?? lot.expirationDate }}</span>
@@ -234,10 +280,10 @@ function submit() {
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 flex-shrink-0">
-                                    <button type="button" @click="decreaseQuantity(ii, li)" :class="{'opacity-30 cursor-not-allowed': lot.sortie <= 0}" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-500">
+                                    <button type="button" @click="decreaseQuantity(ii, li)" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-500">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
                                     </button>
-                                    <input type="number" v-model.number="lot.sortie" :max="lot.qte" min="0" class="w-12 text-center rounded-md border-gray-200 py-1 text-sm font-semibold tabular-nums focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
+                                    <input type="number" v-model.number="lot.sortie" :max="lot.qte" class="w-12 text-center rounded-md border-gray-200 py-1 text-sm font-semibold tabular-nums focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" :class="lot.sortie < 0 ? 'text-red-600' : ''"/>
                                     <button type="button" @click="increaseQuantity(ii, li)" :class="{'opacity-30 cursor-not-allowed': lot.sortie >= lot.qte}" class="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-500">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                                     </button>
