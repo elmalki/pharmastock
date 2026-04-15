@@ -49,7 +49,6 @@ class DestockageController extends Controller
         try {
             $destockage = Destockage::create([
                 'n_destockage' => $request->n_destockage,
-                'fonctionnaire' => $request->fonctionnaire,
                 'motifs' => $request->motifs,
                 'user_id' => Auth::id(),
             ]);

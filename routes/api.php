@@ -32,4 +32,9 @@ Route::middleware('web', 'auth')->group(function () {
             ->where('produit_id', request()->id)
             ->get();
     });
+    Route::post('lastLot', function () {
+        return \App\Models\CommandeProduit::where('produit_id', request()->id)
+            ->latest('id')
+            ->first(['prix_achat', 'prix_vente', 'tva']);
+    });
 });

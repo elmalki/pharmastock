@@ -24,6 +24,7 @@ class StoreFournisseurRequest extends FormRequest
         return [
             'societe' => 'required|string|max:255',
             'contact' => 'nullable|string|max:255',
+            'telephone' => 'nullable|string|max:30',
             'adresse' => 'nullable|string|max:500',
             'email' => 'nullable|email|max:255',
         ];

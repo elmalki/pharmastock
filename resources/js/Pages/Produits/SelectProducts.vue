@@ -44,14 +44,30 @@ axios.get('/api/produits').then(response => {
     produits = response.data;
     items.value = produits
     produits.forEach((el) => {
-        el.entree = {expirationDate: null, qte: null, n_lot: null, prix_achat: null, prix_vente: null,tva:20};
-        let id = el.label;
-        expirationDate[id] = false;
+        el.entree = {expirationDate: null, qte: null, n_lot: null, prix_achat: null, prix_vente: null, tva: null};
     });
 })
 props.produits?.forEach(el=>el.entree=el.pivot)
 const selected = ref(props.produits)
-watch(selected,(val)=> emit('selected', selected.value))
+
+watch(selected, async (newVal, oldVal) => {
+    // Find newly added products (in newVal but not in oldVal)
+    const oldIds = new Set((oldVal || []).map(p => p.id));
+    const newProducts = (newVal || []).filter(p => !oldIds.has(p.id));
+
+    // Fetch last lot prices for each new product
+    await Promise.all(newProducts.map(product =>
+        axios.post('/api/lastLot', {id: product.id}).then(r => {
+            if (r.data) {
+                product.entree.prix_achat = r.data.prix_achat;
+                product.entree.prix_vente = r.data.prix_vente;
+                product.entree.tva = r.data.tva;
+            }
+        }).catch(() => {})
+    ));
+
+    emit('selected', selected.value);
+})
 const removeProduct = (id) => {
     selected.value = selected.value.filter(_ => _.id !== id)
 }

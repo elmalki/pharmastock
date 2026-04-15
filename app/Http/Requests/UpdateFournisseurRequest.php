@@ -24,6 +24,7 @@ class UpdateFournisseurRequest extends FormRequest
         return [
             'societe'=>'required|string',
             'contact'=>'string',
+            'telephone'=>'nullable|string|max:30',
             'adresse'=>'string',
             'email'=>'email|nullable',
         ];

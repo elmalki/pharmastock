@@ -23,7 +23,6 @@ class StoreDestockageRequest extends FormRequest
     {
         return [
             'n_destockage' => 'required|string|max:255',
-            'fonctionnaire' => 'nullable|string|max:255',
             'motifs' => 'required|string|max:500',
             'produits' => 'required|array|min:1',
             'produits.*.lots' => 'required|array|min:1',

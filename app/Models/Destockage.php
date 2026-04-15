@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Destockage extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id','motifs','fonctionnaire','n_destockage'];
+    protected $fillable = ['user_id','motifs','n_destockage'];
     protected $with = [];
     public function user(){
         return $this->belongsTo(User::class);
