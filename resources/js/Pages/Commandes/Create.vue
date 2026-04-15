@@ -163,7 +163,6 @@ function selectedItems(items) {
                     <SelectProducts @selected="selectedItems"/>
                 </div>
             </div>
-
             <!-- Actions -->
             <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                 <button @click="vider()" type="button"

@@ -3,6 +3,7 @@ import {ref} from 'vue';
 import {Head, Link, router, usePage} from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
+import ValidationErrors from '@/Components/ValidationErrors.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
@@ -43,6 +44,7 @@ const logout = () => router.post(route('logout'));
     <div>
         <Head :title="title"/>
         <Banner/>
+        <ValidationErrors/>
         <div class="min-h-screen ">
             <!-- ═══════════════════════════════════════════ -->
             <!-- TOP NAVIGATION BAR                         -->

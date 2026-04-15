@@ -25,4 +25,11 @@ class StoreCategoryRequest extends FormRequest
             'label'=>'required|string',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'label' => 'libellé',
+        ];
+    }
 }

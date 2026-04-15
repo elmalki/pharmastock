@@ -38,4 +38,24 @@ class StoreVenteRequest extends FormRequest
             'produits.*.lots.*.prix_vente' => 'required|numeric|min:0',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'date' => 'date',
+            'paiement' => 'mode de paiement',
+            'client_id' => 'client',
+            'n_facture' => 'numéro de facture',
+            'dateEcheance' => 'date d\'échéance',
+            'montantPaye' => 'montant payé',
+            'remise' => 'remise',
+            'produits' => 'produits',
+            'produits.*.id' => 'produit',
+            'produits.*.lots' => 'lots',
+            'produits.*.lots.*.n_lot' => 'numéro de lot',
+            'produits.*.lots.*.commande_id' => 'commande',
+            'produits.*.lots.*.sortie' => 'quantité',
+            'produits.*.lots.*.prix_vente' => 'prix de vente',
+        ];
+    }
 }

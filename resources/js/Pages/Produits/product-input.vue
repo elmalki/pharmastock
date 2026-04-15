@@ -82,7 +82,7 @@
                 <div class="sm:col-span-2">
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">TVA</label>
                     <div class="relative">
-                        <input type="number" v-model="entree.tva" min="0" max="100"
+                        <input type="number" v-model.number="entree.tva" min="0" max="100" step="1"
                                class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-4 pr-9 tabular-nums transition-colors"
                                placeholder="20">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -113,7 +113,7 @@
                         <span class="font-bold text-indigo-700 tabular-nums">{{ formatPrice(totalHT) }}</span>
                     </div>
                     <div v-if="entree.tva > 0" class="flex items-center gap-4 text-xs">
-                        <span class="text-gray-500">TVA ({{ entree.tva }}%):</span>
+                        <span class="text-gray-500">TVA ({{ parseInt(entree.tva) || 0 }}%):</span>
                         <span class="font-bold text-amber-700 tabular-nums">{{ formatPrice(totalTVA) }}</span>
                     </div>
                     <div class="flex items-center gap-4 text-xs">

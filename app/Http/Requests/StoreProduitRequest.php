@@ -38,4 +38,24 @@ class StoreProduitRequest extends FormRequest
             'categorie_id' => 'nullable|exists:categories,id',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'label' => 'libellé',
+            'barcode' => 'code-barres',
+            'dci' => 'DCI',
+            'forme' => 'forme',
+            'dosage' => 'dosage',
+            'laboratoire' => 'laboratoire',
+            'unite' => 'unité',
+            'description' => 'description',
+            'perissable' => 'périssable',
+            'ordonnance_requise' => 'ordonnance requise',
+            'prix_public' => 'prix public',
+            'generated' => 'généré',
+            'limit_command' => 'limite de commande',
+            'categorie_id' => 'catégorie',
+        ];
+    }
 }

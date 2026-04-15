@@ -36,7 +36,29 @@ class StoreCommandeRequest extends FormRequest
             'produits.*.entree.prix_vente' => 'required|numeric|min:0',
             'produits.*.entree.n_lot' => 'nullable|string|max:255',
             'produits.*.entree.expirationDate' => 'nullable|date',
-            'produits.*.entree.tva' => 'nullable|integer|min:0|max:100',
+            'produits.*.entree.tva' => 'nullable|numeric|min:0|max:100',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'n_bon' => 'numéro de bon',
+            'n_facture' => 'numéro de facture',
+            'fournisseur_id' => 'fournisseur',
+            'date' => 'date',
+            'paiement' => 'mode de paiement',
+            'dateEcheance' => 'date d\'échéance',
+            'situation' => 'situation',
+            'produits' => 'produits',
+            'produits.*.id' => 'produit',
+            'produits.*.entree.qte' => 'quantité',
+            'produits.*.entree.prix_achat' => 'prix d\'achat',
+            'produits.*.entree.prix_vente' => 'prix de vente',
+            'produits.*.entree.n_lot' => 'numéro de lot',
+            'produits.*.entree.expirationDate' => 'date de péremption',
+            'produits.*.entree.tva' => 'TVA',
+        ];
+    }
+
 }

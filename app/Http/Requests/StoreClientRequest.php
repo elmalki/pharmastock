@@ -26,4 +26,12 @@ class StoreClientRequest extends FormRequest
             'tel' => 'nullable|string|max:20',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'nom' => 'nom',
+            'tel' => 'téléphone',
+        ];
+    }
 }

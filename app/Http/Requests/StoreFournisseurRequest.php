@@ -29,4 +29,15 @@ class StoreFournisseurRequest extends FormRequest
             'email' => 'nullable|email|max:255',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'societe' => 'société',
+            'contact' => 'contact',
+            'telephone' => 'téléphone',
+            'adresse' => 'adresse',
+            'email' => 'email',
+        ];
+    }
 }

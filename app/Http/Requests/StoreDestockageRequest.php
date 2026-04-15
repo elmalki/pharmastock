@@ -32,4 +32,18 @@ class StoreDestockageRequest extends FormRequest
             'produits.*.lots.*.qte' => 'required|integer|min:0',
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'n_destockage' => 'numéro de destockage',
+            'motifs' => 'motifs',
+            'produits' => 'produits',
+            'produits.*.lots' => 'lots',
+            'produits.*.lots.*.produit_id' => 'produit',
+            'produits.*.lots.*.commande_id' => 'commande',
+            'produits.*.lots.*.sortie' => 'quantité à destocker',
+            'produits.*.lots.*.qte' => 'quantité disponible',
+        ];
+    }
 }

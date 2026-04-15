@@ -29,4 +29,15 @@ class StoreUserRequest extends FormRequest
             'roles'=>'required'
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nom',
+            'password' => 'mot de passe',
+            'password_confirmation' => 'confirmation du mot de passe',
+            'email' => 'email',
+            'roles' => 'rôles',
+        ];
+    }
 }
