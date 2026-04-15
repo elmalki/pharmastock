@@ -140,13 +140,22 @@ class ProduitController extends Controller
 
     public function stock()
     {
-        $pdf = Pdf::loadView(
-            'pdf.stock',
-            ['produits'=>Produit::all()]
-        )
-            // ->setPaper('A4', 'landscape')
+        $produits = Produit::with('categorie')
+            ->withSum('lots as lots_sum_qte', 'qte')
+            ->withSum(['lots as lots_perime_sum' => fn($q) => $q->where('expirationDate', '<', now())], 'qte')
+            ->orderBy('label')
+            ->get();
+
+        $stats = [
+            'total' => $produits->count(),
+            'rupture' => $produits->filter(fn($p) => ($p->qte ?? 0) == 0)->count(),
+            'critique' => $produits->filter(fn($p) => ($p->qte ?? 0) > 0 && ($p->qte ?? 0) <= ($p->limit_command ?? 0))->count(),
+            'valeur' => $produits->sum(fn($p) => ($p->qte ?? 0) * ($p->prix_public ?? 0)),
+        ];
+
+        return Pdf::loadView('pdf.stock', compact('produits', 'stats'))
+            ->setPaper('A4', 'landscape')
             ->stream();
-        return $pdf;
     }
     public function perimesPDF()
     {

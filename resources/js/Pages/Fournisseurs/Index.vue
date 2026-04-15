@@ -4,7 +4,7 @@ import Breadcrumbs from "@/Components/Breadcrumbs.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
-import {router, useForm} from '@inertiajs/vue3';
+import {router, useForm, Link} from '@inertiajs/vue3';
 import {ref, computed, nextTick} from "vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
@@ -267,9 +267,17 @@ function deleteFournisseur() {
                             <span v-else class="text-gray-300">0</span>
                         </template>
                     </Column>
-                    <Column header="" style="width: 6rem">
+                    <Column header="" style="width: 8rem">
                         <template #body="{ data }">
                             <div class="flex items-center justify-end gap-0.5">
+                                <Link :href="route('fournisseurs.show', {fournisseur: data.id})"
+                                      class="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                                      title="Détails">
+                                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                </Link>
                                 <button @click="openEdit(data)"
                                         class="p-2 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"
                                         title="Modifier">

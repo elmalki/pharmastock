@@ -93,7 +93,7 @@ function totalSortie(item) {
                                 </svg>
                             </div>
                             <input v-model="form.n_destockage" type="text"
-                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors"
+                                   class="block w-full rounded-xl border border-gray-500 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors"
                                    placeholder="Numéro">
                         </div>
                     </div>

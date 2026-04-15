@@ -6,7 +6,6 @@ import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
-import {saveAs} from 'file-saver';
 import DataTable from "primevue/datatable";
 import Paginator from "primevue/paginator";
 import Column from "primevue/column";
@@ -186,14 +185,7 @@ function deleteProduit() {
 }
 
 function downloadPDF() {
-    downloading.value = true;
-    axios.post('/stock', {}, {responseType: 'blob', headers: {Accept: 'application/pdf'}})
-        .then((response) => {
-            const blob = new Blob([response.data], {type: 'application/pdf'});
-            const date = new Date().toLocaleDateString('fr-FR').replace(/\//g, '_');
-            saveAs(blob, `stock_${date}.pdf`);
-        })
-        .finally(() => downloading.value = false);
+    window.open('/stock', '_blank');
 }
 
 function stockSeverity(produit) {

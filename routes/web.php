@@ -37,9 +37,11 @@ Route::middleware([
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::resource('roles', \App\Http\Controllers\RoleController::class);
     Route::resource('permissions', \App\Http\Controllers\PermissionController::class);
+    Route::get('caisse', [\App\Http\Controllers\CaisseController::class, 'index'])->name('caisse.index');
+    Route::post('caisse/vider', [\App\Http\Controllers\CaisseController::class, 'vider'])->name('caisse.vider');
     Route::get('export', [\App\Http\Controllers\ProduitController::class,'export']);
     Route::get('exportPerimes', [\App\Http\Controllers\ProduitController::class,'exportPerimes']);
-    Route::post('stock', [\App\Http\Controllers\ProduitController::class,'stock']);
+    Route::get('stock', [\App\Http\Controllers\ProduitController::class,'stock']);
     Route::post('barcodes', [\App\Http\Controllers\ProduitController::class,'barcodes']);
     Route::get('notifications',[\App\Http\Controllers\DashboardController::class,'notifications'])->name('notifications.index');
     Route::delete('notifications/all',[\App\Http\Controllers\DashboardController::class,'deleteAllNotifications'])->name('notifications.markasread');

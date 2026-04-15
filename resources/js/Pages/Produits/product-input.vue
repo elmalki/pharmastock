@@ -32,7 +32,7 @@
                             </svg>
                         </div>
                         <input type="number" v-model="entree.qte" min="1"
-                               class="block w-full rounded-xl border-gray-500 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-9 pr-4 tabular-nums font-semibold transition-colors"
+                               class="block w-full rounded-xl border border-gray-500 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-9 pr-4 tabular-nums font-semibold transition-colors"
                                placeholder="0">
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                             </svg>
                         </div>
                         <input type="text" v-model="entree.n_lot"
-                               class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-9 pr-4 font-mono transition-colors"
+                               class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-9 pr-4 font-mono transition-colors"
                                placeholder="Numéro de lot">
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                             <span class="text-gray-400 text-xs font-medium">Dhs</span>
                         </div>
                         <input type="number" step="0.01" v-model="entree.prix_achat"
-                               class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm py-2.5 pl-10 pr-4 tabular-nums transition-colors"
+                               class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm py-2.5 pl-10 pr-4 tabular-nums transition-colors"
                                placeholder="0.00">
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                             <span class="text-gray-400 text-xs font-medium">Dhs</span>
                         </div>
                         <input type="number" step="0.01" v-model="entree.prix_vente"
-                               class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm py-2.5 pl-10 pr-4 tabular-nums transition-colors"
+                               class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm py-2.5 pl-10 pr-4 tabular-nums transition-colors"
                                placeholder="0.00">
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">TVA</label>
                     <div class="relative">
                         <input type="number" v-model="entree.tva" min="0" max="100"
-                               class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-4 pr-9 tabular-nums transition-colors"
+                               class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-4 pr-9 tabular-nums transition-colors"
                                placeholder="20">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-400 text-sm font-semibold">%</span>

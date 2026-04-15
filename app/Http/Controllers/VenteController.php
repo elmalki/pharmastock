@@ -132,6 +132,32 @@ class VenteController extends Controller
     }
 
     /**
+     * Sync a caisse mouvement for this vente if paiement = Éspèce.
+     * Positive montantPaye → entrée; negative → sortie (refund).
+     * Deletes any existing mouvement tied to this vente first (for updates).
+     */
+    private function syncCaisseMouvement(Vente $vente): void
+    {
+        \App\Models\CaisseMouvement::where('vente_id', $vente->id)->delete();
+
+        $paiement = $vente->paiement?->value ?? $vente->paiement;
+        if ($paiement !== \App\Enums\ModePaiement::ESPECE->value) return;
+
+        $montant = (float) $vente->montantPaye;
+        if ($montant == 0) return;
+
+        \App\Models\CaisseMouvement::create([
+            'type'    => $montant > 0 ? 'entree' : 'sortie',
+            'montant' => abs($montant),
+            'motif'   => $montant > 0
+                ? "Vente #{$vente->n_facture}"
+                : "Remboursement vente #{$vente->n_facture}",
+            'vente_id' => $vente->id,
+            'user_id'  => Auth::id(),
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreVenteRequest $request)
@@ -206,6 +232,8 @@ class VenteController extends Controller
                     $lot->decrement('qte', $lotData['sortie']);
                 }
             }
+
+            $this->syncCaisseMouvement($vente);
             DB::commit();
 
             return redirect()->route('ventes.index')
@@ -392,6 +420,7 @@ class VenteController extends Controller
                 }
             }
 
+            $this->syncCaisseMouvement($vente);
             DB::commit();
 
             return redirect()->route('ventes.index')
@@ -424,6 +453,9 @@ class VenteController extends Controller
 
             // Detach products from pivot table
             $vente->produits()->detach();
+
+            // Remove caisse mouvement linked to this vente (cash payment)
+            \App\Models\CaisseMouvement::where('vente_id', $vente->id)->delete();
 
             // Soft delete the vente
             $vente->delete();
