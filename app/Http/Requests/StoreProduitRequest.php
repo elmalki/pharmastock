@@ -28,7 +28,7 @@ class StoreProduitRequest extends FormRequest
             'forme' => 'nullable|string|max:100',
             'dosage' => 'nullable|string|max:100',
             'laboratoire' => 'nullable|string|max:255',
-            'unite' => 'nullable|string|max:50',
+            'unite' => 'nullable|integer|min:0',
             'description' => 'nullable|string|max:1000',
             'perissable' => 'boolean',
             'ordonnance_requise' => 'boolean',
