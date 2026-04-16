@@ -32,14 +32,7 @@ const totalUnites = computed(() => {
 });
 
 function downloadFiles() {
-    downloading.value = true;
-    axios.post("/stock", {}, {responseType: "blob", headers: {Accept: "application/pdf"}})
-        .then(response => {
-            const blob = new Blob([response.data], {type: "application/pdf"});
-            const date = new Date().toLocaleDateString('fr-FR').replace(/\//g, '_');
-            saveAs(blob, `stock_${date}.pdf`);
-        })
-        .finally(() => downloading.value = false);
+    window.open(route('destockages.pdf'), '_blank');
 }
 </script>
 

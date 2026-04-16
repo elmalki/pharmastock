@@ -22,7 +22,6 @@ class StoreDestockageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'n_destockage' => 'required|string|max:255',
             'motifs' => 'required|string|max:500',
             'produits' => 'required|array|min:1',
             'produits.*.lots' => 'required|array|min:1',
@@ -36,7 +35,6 @@ class StoreDestockageRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'n_destockage' => 'numéro de destockage',
             'motifs' => 'motifs',
             'produits' => 'produits',
             'produits.*.lots' => 'lots',

@@ -47,15 +47,19 @@ class DestockageController extends Controller
         DB::beginTransaction();
 
         try {
+            $setting = Setting::latest()->first();
+            if (!$setting || date('Y') != $setting->year) {
+                $setting = Setting::create();
+                $setting->refresh();
+            }
+            $setting->destockage_number = $setting->destockage_number + 1;
+            $setting->save();
+
             $destockage = Destockage::create([
-                'n_destockage' => $request->n_destockage,
+                'n_destockage' => $setting->destockage_number . '/' . $setting->year,
                 'motifs' => $request->motifs,
                 'user_id' => Auth::id(),
             ]);
-
-            $setting = Setting::latest()->first();
-            $setting->destockage_number = $setting->destockage_number + 1;
-            $setting->save();
 
             $total = 0;
             foreach ($request->produits as $produit) {
@@ -133,6 +137,20 @@ class DestockageController extends Controller
     public function destroy(Destockage $destockage)
     {
         $destockage->delete();
+    }
+
+    public function yearPdf()
+    {
+        $year = (int) (request('year') ?: date('Y'));
+        $destockages = Destockage::with('produits', 'user')
+            ->whereYear('created_at', $year)
+            ->orderBy('created_at')
+            ->get();
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'pdf.destockages',
+            ['destockages' => $destockages, 'year' => $year]
+        )->setPaper('A4', 'landscape')->stream("destockages_{$year}.pdf");
     }
 
     public function decharge(Destockage $destockage)

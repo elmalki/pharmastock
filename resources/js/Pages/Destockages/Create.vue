@@ -9,7 +9,6 @@ const props = defineProps({number: Number});
 
 const form = useForm({
     motifs: '',
-    n_destockage: props.number,
     produits: [],
 });
 
@@ -83,18 +82,15 @@ function totalSortie(item) {
                 </div>
 
                 <div class="p-6">
-                    <!-- N° -->
+                    <!-- N° (auto-généré) -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">N° Destockage</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5"/>
-                                </svg>
-                            </div>
-                            <input v-model="form.n_destockage" type="text"
-                                   class="block w-full rounded-xl border border-gray-500 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors"
-                                   placeholder="Numéro">
+                        <div class="inline-flex items-center gap-2 rounded-xl bg-orange-50 border border-orange-200 px-4 py-2.5">
+                            <svg class="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5"/>
+                            </svg>
+                            <span class="font-mono text-sm font-semibold text-orange-900">{{ props.number }}</span>
+                            <span class="text-xs text-orange-700">(généré automatiquement)</span>
                         </div>
                     </div>
                 </div>

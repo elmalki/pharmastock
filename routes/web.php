@@ -33,6 +33,7 @@ Route::middleware([
     Route::resource('ventes', \App\Http\Controllers\VenteController::class);
     Route::resource('produits', \App\Http\Controllers\ProduitController::class);
     Route::resource('commandes', \App\Http\Controllers\CommandeController::class);
+    Route::get('destockages/pdf', [\App\Http\Controllers\DestockageController::class, 'yearPdf'])->name('destockages.pdf');
     Route::resource('destockages', \App\Http\Controllers\DestockageController::class);
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::resource('roles', \App\Http\Controllers\RoleController::class);
