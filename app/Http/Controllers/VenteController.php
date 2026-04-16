@@ -46,7 +46,7 @@ class VenteController extends Controller
 
         return Inertia::render('Ventes/Index', [
             'items' => $query
-                ->orderBy(request()->field ?? 'id', request()->order == 1 ? 'desc' : 'asc')
+                ->orderBy(request()->field ?? 'id', (int) request('order', -1) === 1 ? 'asc' : 'desc')
                 ->paginate(10)
                 ->withQueryString(),
             'sort_fields' => request(),

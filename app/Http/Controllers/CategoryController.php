@@ -18,7 +18,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-         return Inertia::render('Categories/Index', ['items' => Categorie::all()]);
+         return Inertia::render('Categories/Index', ['items' => Categorie::orderByDesc('id')->get()]);
 
        // return Inertia::render('Parametres/Categories', ['items' => Categorie::all()]);
     }

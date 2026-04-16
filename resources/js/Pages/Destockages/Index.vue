@@ -32,7 +32,14 @@ const totalUnites = computed(() => {
 });
 
 function downloadFiles() {
-    window.open(route('destockages.pdf'), '_blank');
+    downloading.value = true;
+    axios.post("/stock", {}, {responseType: "blob", headers: {Accept: "application/pdf"}})
+        .then(response => {
+            const blob = new Blob([response.data], {type: "application/pdf"});
+            const date = new Date().toLocaleDateString('fr-FR').replace(/\//g, '_');
+            saveAs(blob, `stock_${date}.pdf`);
+        })
+        .finally(() => downloading.value = false);
 }
 </script>
 
@@ -139,10 +146,10 @@ function downloadFiles() {
                         </span>
                     </div>
                     <div class="relative">
-                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg v-if="!filters['global'].value" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
                         </svg>
-                        <InputText v-model="filters['global'].value" placeholder="Rechercher..." class="pl-9 w-72 text-sm"/>
+                        <InputText v-model="filters['global'].value"  class="pl-9 w-72 text-sm"/>
                     </div>
                 </div>
 

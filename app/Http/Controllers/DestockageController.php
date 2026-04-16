@@ -23,7 +23,13 @@ class DestockageController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Destockages/Index', ['items' => Destockage::with('produits', 'user')->paginate(10),'sort_fields'=>request()]);
+        return Inertia::render('Destockages/Index', [
+            'items' => Destockage::with('produits', 'user')
+                ->orderBy(request()->field ?? 'id', (int) request('order', -1) === 1 ? 'asc' : 'desc')
+                ->paginate(10)
+                ->withQueryString(),
+            'sort_fields' => request(),
+        ]);
     }
 
     /**
