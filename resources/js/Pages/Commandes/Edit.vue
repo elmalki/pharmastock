@@ -114,7 +114,7 @@ function selectedItems(items) {
                                     </svg>
                                 </div>
                                 <input v-model="form.n_bon" type="text"
-                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
+                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
                                        placeholder="Numéro de bon">
                             </div>
                         </div>
@@ -128,7 +128,7 @@ function selectedItems(items) {
                                     </svg>
                                 </div>
                                 <input v-model="form.n_facture" type="text"
-                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
+                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
                                        placeholder="Numéro de facture">
                             </div>
                         </div>

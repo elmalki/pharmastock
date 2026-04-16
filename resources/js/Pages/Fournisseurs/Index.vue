@@ -378,7 +378,7 @@ function deleteFournisseur() {
                                                 </svg>
                                             </div>
                                             <input ref="societeInput" v-model="form.societe" type="text"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                   class="block w-full pl-10 rounded-lg border border-red-500 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                    placeholder="Nom de la société"/>
                                         </div>
                                         <InputError :message="form.errors.societe" class="mt-1.5"/>
@@ -392,7 +392,7 @@ function deleteFournisseur() {
                                                 </svg>
                                             </div>
                                             <input v-model="form.contact" type="text"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                    placeholder="Nom du contact"/>
                                         </div>
                                         <InputError :message="form.errors.contact" class="mt-1.5"/>
@@ -406,7 +406,7 @@ function deleteFournisseur() {
                                                 </svg>
                                             </div>
                                             <input v-model="form.telephone" type="tel"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                    placeholder="0600000000"/>
                                         </div>
                                         <InputError :message="form.errors.telephone" class="mt-1.5"/>
@@ -421,7 +421,7 @@ function deleteFournisseur() {
                                                 </svg>
                                             </div>
                                             <input v-model="form.adresse" type="text"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                    placeholder="Adresse complète"/>
                                         </div>
                                         <InputError :message="form.errors.adresse" class="mt-1.5"/>
@@ -435,7 +435,7 @@ function deleteFournisseur() {
                                                 </svg>
                                             </div>
                                             <input v-model="form.email" type="email"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                    placeholder="email@exemple.com"/>
                                         </div>
                                         <InputError :message="form.errors.email" class="mt-1.5"/>

@@ -634,7 +634,7 @@ function goToStep(step) {
                                                 Désignation <span class="text-red-500">*</span>
                                             </label>
                                             <input v-model="form.label" type="text"
-                                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                   class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                    :class="form.errors.label ? 'border-red-300 ring-1 ring-red-300' : ''"
                                                    placeholder="Nom du produit">
                                             <p v-if="form.errors.label" class="mt-1.5 text-sm text-red-500 flex items-center gap-1">
@@ -653,7 +653,7 @@ function goToStep(step) {
                                                     </svg>
                                                 </div>
                                                 <input v-model="form.barcode" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors"
                                                        placeholder="Code-barres">
                                             </div>
                                             <p v-if="form.errors.barcode" class="mt-1.5 text-sm text-red-500">{{ form.errors.barcode }}</p>
@@ -663,7 +663,7 @@ function goToStep(step) {
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Catégorie</label>
                                             <select v-model="form.categorie_id"
-                                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors">
+                                                    class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors">
                                                 <option value="">— Aucune catégorie —</option>
                                                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.label }}</option>
                                             </select>
@@ -674,7 +674,7 @@ function goToStep(step) {
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
                                             <textarea v-model="form.description" rows="3"
-                                                      class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors resize-none"
+                                                      class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors resize-none"
                                                       placeholder="Description optionnelle du produit..."></textarea>
                                             <p v-if="form.errors.description" class="mt-1.5 text-sm text-red-500">{{ form.errors.description }}</p>
                                         </div>
@@ -709,7 +709,7 @@ function goToStep(step) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">DCI</label>
                                                 <input v-model="form.dci" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Dénomination commune">
                                                 <p v-if="form.errors.dci" class="mt-1.5 text-sm text-red-500">{{ form.errors.dci }}</p>
                                             </div>
@@ -718,7 +718,7 @@ function goToStep(step) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Forme</label>
                                                 <input v-model="form.forme" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Comprimé, sirop...">
                                                 <p v-if="form.errors.forme" class="mt-1.5 text-sm text-red-500">{{ form.errors.forme }}</p>
                                             </div>
@@ -729,7 +729,7 @@ function goToStep(step) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Dosage</label>
                                                 <input v-model="form.dosage" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="500mg, 10ml...">
                                                 <p v-if="form.errors.dosage" class="mt-1.5 text-sm text-red-500">{{ form.errors.dosage }}</p>
                                             </div>
@@ -738,7 +738,7 @@ function goToStep(step) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Laboratoire</label>
                                                 <input v-model="form.laboratoire" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Nom du laboratoire">
                                                 <p v-if="form.errors.laboratoire" class="mt-1.5 text-sm text-red-500">{{ form.errors.laboratoire }}</p>
                                             </div>
@@ -748,7 +748,7 @@ function goToStep(step) {
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Unité par boîte</label>
                                             <input v-model="form.unite" type="text"
-                                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                   class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                    placeholder="Ex: 30 comprimés">
                                             <p v-if="form.errors.unite" class="mt-1.5 text-sm text-red-500">{{ form.errors.unite }}</p>
                                         </div>
@@ -816,7 +816,7 @@ function goToStep(step) {
                                                         <span class="text-gray-400 text-sm font-medium">Dhs</span>
                                                     </div>
                                                     <input v-model="form.prix_public" type="number" step="0.01" min="0"
-                                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-12 pr-4 transition-colors"
+                                                           class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-12 pr-4 transition-colors"
                                                            placeholder="0.00">
                                                 </div>
                                                 <p v-if="form.errors.prix_public" class="mt-1.5 text-sm text-red-500">{{ form.errors.prix_public }}</p>
@@ -832,7 +832,7 @@ function goToStep(step) {
                                                         </svg>
                                                     </div>
                                                     <input v-model="form.limit_command" type="number" min="0"
-                                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
+                                                           class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
                                                            placeholder="Quantité minimum">
                                                 </div>
                                                 <p v-if="form.errors.limit_command" class="mt-1.5 text-sm text-red-500">{{ form.errors.limit_command }}</p>

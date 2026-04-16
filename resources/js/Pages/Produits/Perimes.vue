@@ -359,7 +359,7 @@ function downloadPDF() {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Catégorie</label>
                                 <select v-model="selectedCategorie"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-red-500 focus:ring-red-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-red-500 focus:ring-red-500">
                                     <option :value="null">Toutes les catégories</option>
                                     <option v-for="cat in uniqueCategories" :key="cat.id" :value="cat.id">
                                         {{ cat.label }}
@@ -369,7 +369,7 @@ function downloadPDF() {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Ancienneté de péremption</label>
                                 <select v-model="selectedExpiry"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-red-500 focus:ring-red-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-red-500 focus:ring-red-500">
                                     <option v-for="opt in expiryOptions" :key="opt.value" :value="opt.value">
                                         {{ opt.label }}
                                     </option>

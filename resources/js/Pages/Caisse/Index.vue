@@ -274,7 +274,7 @@ function setPartial(ratio) {
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Montant à retirer</label>
                         <div class="relative">
                             <input v-model.number="form.montant" type="number" step="0.01" min="0.01" :max="kpis.solde"
-                                   class="block w-full rounded-lg border-gray-300 pl-3 pr-14 py-2.5 text-lg font-semibold tabular-nums shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
+                                   class="block w-full rounded-lg border border-gray-300 pl-3 pr-14 py-2.5 text-lg font-semibold tabular-nums shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">MAD</span>
                         </div>
                         <div class="flex gap-1.5 mt-2">
@@ -294,7 +294,7 @@ function setPartial(ratio) {
                         <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Motif <span class="text-rose-500">*</span></label>
                         <textarea v-model="form.motif" rows="3"
                                   placeholder="Ex: Dépôt bancaire, Achat fournisseur, Autre..."
-                                  class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+                                  class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
                         <InputError :message="form.errors.motif" class="mt-2"/>
                     </div>
                 </div>

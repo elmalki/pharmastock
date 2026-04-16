@@ -32,6 +32,18 @@ class ProduitController extends Controller
         $query = Produit::withSum('lots as lots_sum_qte', 'qte');
 
         // Filters
+        if (request()->filled('search')) {
+            $term = request()->search;
+            $query->where(function ($q) use ($term) {
+                $q->where('label', 'like', "%{$term}%")
+                    ->orWhere('dci', 'like', "%{$term}%")
+                    ->orWhere('barcode', 'like', "%{$term}%")
+                    ->orWhere('laboratoire', 'like', "%{$term}%")
+                    ->orWhere('forme', 'like', "%{$term}%")
+                    ->orWhere('dosage', 'like', "%{$term}%")
+                    ->orWhereHas('categorie', fn($c) => $c->where('label', 'like', "%{$term}%"));
+            });
+        }
         if (request()->filled('categorie_id')) {
             $query->where('categorie_id', request()->categorie_id);
         }
@@ -71,6 +83,7 @@ class ProduitController extends Controller
             'applied_filters' => [
                 'categorie_id' => request()->categorie_id,
                 'stock_status' => request()->stock_status,
+                'search' => request()->search,
             ],
         ]);
     }

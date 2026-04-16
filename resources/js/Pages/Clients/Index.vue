@@ -329,7 +329,7 @@ function deleteClient() {
                                                 </svg>
                                             </div>
                                             <input ref="nomInput" v-model="form.nom" type="text"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
                                                    placeholder="Nom du client"/>
                                         </div>
                                         <InputError :message="form.errors.nom" class="mt-1.5"/>
@@ -343,7 +343,7 @@ function deleteClient() {
                                                 </svg>
                                             </div>
                                             <input v-model="form.tel" type="text"
-                                                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
+                                                   class="block w-full pl-10 rounded-lg border border-gray-300 shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
                                                    placeholder="06 00 00 00 00"/>
                                         </div>
                                         <InputError :message="form.errors.tel" class="mt-1.5"/>

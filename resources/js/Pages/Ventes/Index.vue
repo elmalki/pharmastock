@@ -379,26 +379,26 @@ function statutLabel(statut) {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Statut</label>
                                 <select v-model="selectedStatut" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <option v-for="opt in statutOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Mode de paiement</label>
                                 <select v-model="selectedPaiement" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <option v-for="opt in paiementOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Date début</label>
                                 <input type="date" v-model="dateFrom" @change="applyFilters"
-                                       class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                       class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Date fin</label>
                                 <input type="date" v-model="dateTo" @change="applyFilters"
-                                       class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                       class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
                             </div>
                             <div class="flex items-end">
                                 <button v-if="hasActiveFilters" @click="clearFilters"

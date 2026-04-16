@@ -514,41 +514,6 @@ class DatabaseSeeder extends Seeder
         DB::table('commande_produit')->where('id', $lotK->id)->decrement('qte', 2);
         DB::table('commande_produit')->where('id', $lotA->id)->decrement('qte', 2);
 
-        // ── Destockages ────────────────────────────────────────
-        $destockage1 = Destockage::create([
-            'motifs' => 'Produits périmés - Lot LAP-X001 Métronidazole expiré le ' . $now->copy()->subDays(10)->format('d/m/Y'),
-            'user_id' => $admin->id,
-            'n_destockage' => 'DS-2026-001',
-            'fonctionnaire' => 'Dr. Yassine EL MALKI',
-        ]);
-        DB::table('destockage_produit')->insert([
-            ['destockage_id' => $destockage1->id, 'produit_id' => $produits[11]->id, 'qte' => 10, 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        $lapX001 = $getLot('LAP-X001');
-        DB::table('commande_produit')->where('id', $lapX001->id)->decrement('qte', 10);
 
-        $destockage2 = Destockage::create([
-            'motifs' => 'Casse lors de la manutention',
-            'user_id' => $pharmacien->id,
-            'n_destockage' => 'DS-2026-002',
-            'fonctionnaire' => 'Amina BENALI',
-        ]);
-        DB::table('destockage_produit')->insert([
-            ['destockage_id' => $destockage2->id, 'produit_id' => $produits[29]->id, 'qte' => 5, 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        $copH071 = $getLot('COP-H071');
-        DB::table('commande_produit')->where('id', $copH071->id)->decrement('qte', 5);
-
-        $destockage3 = Destockage::create([
-            'motifs' => 'Rappel de lot par le laboratoire',
-            'user_id' => $admin->id,
-            'n_destockage' => 'DS-2026-003',
-            'fonctionnaire' => 'Dr. Yassine EL MALKI',
-        ]);
-        DB::table('destockage_produit')->insert([
-            ['destockage_id' => $destockage3->id, 'produit_id' => $produits[5]->id, 'qte' => 3, 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        $copC020 = $getLot('COP-C020');
-        DB::table('commande_produit')->where('id', $copC020->id)->decrement('qte', 3);
     }
 }

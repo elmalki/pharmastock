@@ -105,7 +105,7 @@ const totalAvailable = computed(() => props.permissions.length);
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.3-4.3M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0Z"/>
                     </svg>
                     <input v-model="search" type="text" placeholder="Rechercher..."
-                           class="h-9 w-48 rounded-lg border-gray-300 bg-white pl-8 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
+                           class="h-9 w-48 rounded-lg border border-gray-300 bg-white pl-8 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"/>
                 </div>
                 <button type="button" @click="selectAll"
                         class="h-9 px-3 rounded-lg text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 ring-1 ring-inset ring-indigo-200 transition-colors">

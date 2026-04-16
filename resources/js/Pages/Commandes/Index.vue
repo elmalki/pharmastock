@@ -360,26 +360,26 @@ function isOverdue(commande) {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Situation</label>
                                 <select v-model="selectedSituation" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500">
                                     <option v-for="opt in situationOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Mode de paiement</label>
                                 <select v-model="selectedPaiement" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500">
                                     <option v-for="opt in paiementOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Date début</label>
                                 <input type="date" v-model="dateFrom" @change="applyFilters"
-                                       class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"/>
+                                       class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"/>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Date fin</label>
                                 <input type="date" v-model="dateTo" @change="applyFilters"
-                                       class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"/>
+                                       class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"/>
                             </div>
                             <div class="flex items-end">
                                 <button v-if="hasActiveFilters" @click="clearFilters"
@@ -408,10 +408,10 @@ function isOverdue(commande) {
                         </span>
                     </div>
                     <div class="relative">
-                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg v-if="!filters['global'].value" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        <InputText v-model="filters['global'].value" placeholder="Rechercher..." class="pl-9 w-72 text-sm"/>
+                        <InputText v-model="filters['global'].value" class="pl-9 w-72 text-sm"/>
                     </div>
                 </div>
 

@@ -57,7 +57,7 @@ const submit = () => {
                             </span>
                             <input id="role-name" v-model="form.name" type="text" autofocus
                                    placeholder="Ex: Pharmacien, Caissier, Gestionnaire de stock..."
-                                   class="block w-full rounded-lg border-gray-300 bg-white pl-10 pr-3 py-2.5 text-sm shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"/>
+                                   class="block w-full rounded-lg border border-gray-300 bg-white pl-10 pr-3 py-2.5 text-sm shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"/>
                         </div>
                         <InputError :message="form.errors.name" class="mt-2"/>
                     </div>

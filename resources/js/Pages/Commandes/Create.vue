@@ -11,6 +11,7 @@ import Select from 'primevue/select';
 const fournisseur = ref(null);
 const page = usePage();
 const modes = page.props.enums.modes_paiement;
+const childKey = ref(0);
 
 const form = useForm({
     fournisseur_id: null,
@@ -29,7 +30,12 @@ const fournisseurSelected = (item) => {
     form.fournisseur_id = item.id;
 };
 
-const vider = () => form.reset();
+const vider = () => {
+    form.reset();
+    form.produits = [];
+    fournisseur.value = null;
+    childKey.value++;
+};
 
 const submit = () => {
     form.post(route('commandes.store'));
@@ -93,7 +99,7 @@ function selectedItems(items) {
                         <!-- Fournisseur -->
                         <div class="sm:col-span-3">
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Fournisseur</label>
-                            <SelectFournisseur @selected-fournisseur="fournisseurSelected"/>
+                            <SelectFournisseur :key="`fourn-${childKey}`" @selected-fournisseur="fournisseurSelected"/>
                         </div>
                         <!-- Date -->
                         <div class="sm:col-span-3">
@@ -160,7 +166,7 @@ function selectedItems(items) {
                     </div>
                 </div>
                 <div class="p-6">
-                    <SelectProducts @selected="selectedItems"/>
+                    <SelectProducts :key="`prods-${childKey}`" @selected="selectedItems"/>
                 </div>
             </div>
             <!-- Actions -->

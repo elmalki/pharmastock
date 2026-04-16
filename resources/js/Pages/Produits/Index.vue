@@ -36,6 +36,19 @@ const filters = ref({
     global: {value: null, matchMode: FilterMatchMode.CONTAINS},
 });
 
+const searchTerm = ref(props.applied_filters?.search || '');
+let searchTimer = null;
+function onSearchInput() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        const params = {};
+        if (searchTerm.value) params.search = searchTerm.value;
+        if (selectedCategorie.value) params.categorie_id = selectedCategorie.value;
+        if (selectedStockStatus.value) params.stock_status = selectedStockStatus.value;
+        router.get(route('produits.index'), params, {preserveState: true, preserveScroll: true, replace: true});
+    }, 350);
+}
+
 // Filter state
 const selectedCategorie = ref(props.applied_filters?.categorie_id ? Number(props.applied_filters.categorie_id) : null);
 const selectedStockStatus = ref(props.applied_filters?.stock_status || null);
@@ -57,6 +70,7 @@ const hasActiveFilters = computed(() => selectedCategorie.value || selectedStock
 
 function applyFilters() {
     const params = {};
+    if (searchTerm.value) params.search = searchTerm.value;
     if (selectedCategorie.value) params.categorie_id = selectedCategorie.value;
     if (selectedStockStatus.value) params.stock_status = selectedStockStatus.value;
     if (field.value) params.field = field.value;
@@ -66,6 +80,7 @@ function applyFilters() {
 function clearFilters() {
     selectedCategorie.value = null;
     selectedStockStatus.value = null;
+    searchTerm.value = '';
     router.get(route('produits.index'), {}, {preserveState: true});
 }
 
@@ -234,6 +249,14 @@ function formatCurrency(value) {
                             <path fill-rule="evenodd" d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zM10 8a.75.75 0 01.75.75v3.69l1.22-1.22a.75.75 0 111.06 1.06l-2.5 2.5a.75.75 0 01-1.06 0l-2.5-2.5a.75.75 0 111.06-1.06l1.22 1.22V8.75A.75.75 0 0110 8z" clip-rule="evenodd"/>
                         </svg>
                         Excel
+                    </a>
+                    <a target="_blank"
+                       :href="route('produits.barcodes')"
+                       class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg bg-white text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4 mr-1.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875v14.25M6.75 4.875v14.25M10.5 4.875v14.25M14.25 4.875v14.25M17.25 4.875v14.25M20.25 4.875v14.25"/>
+                        </svg>
+                        Codes-barres
                     </a>
                     <button @click="openCreate"
                             class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors">
@@ -436,7 +459,7 @@ function formatCurrency(value) {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Catégorie</label>
                                 <select v-model="selectedCategorie" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <option :value="null">Toutes les catégories</option>
                                     <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                                         {{ cat.label }}
@@ -448,7 +471,7 @@ function formatCurrency(value) {
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">État du stock</label>
                                 <select v-model="selectedStockStatus" @change="applyFilters"
-                                        class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="block w-full rounded-lg border border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <option v-for="opt in stockStatusOptions" :key="opt.value" :value="opt.value">
                                         {{ opt.label }}
                                     </option>
@@ -484,10 +507,10 @@ function formatCurrency(value) {
                         </span>
                     </div>
                     <div class="relative">
-                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg v-if="!searchTerm" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        <InputText v-model="filters['global'].value" placeholder="Rechercher..." class="pl-9 w-72 text-sm"/>
+                        <InputText v-model="searchTerm" @input="onSearchInput" class="pl-9 w-72 text-sm"/>
                     </div>
                 </div>
 
@@ -776,7 +799,7 @@ function formatCurrency(value) {
                                                 Désignation <span class="text-red-500">*</span>
                                             </label>
                                             <input ref="labelInput" v-model="form.label" type="text"
-                                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                   class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                    :class="form.errors.label ? 'border-red-300 ring-1 ring-red-300' : ''"
                                                    placeholder="Nom du produit">
                                             <p v-if="form.errors.label" class="mt-1.5 text-sm text-red-500 flex items-center gap-1">
@@ -796,7 +819,7 @@ function formatCurrency(value) {
                                                         </svg>
                                                     </div>
                                                     <input v-model="form.barcode" type="text" :disabled="isEditing"
-                                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors disabled:bg-gray-50 disabled:text-gray-500"
+                                                           class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 font-mono transition-colors disabled:bg-gray-50 disabled:text-gray-500"
                                                            placeholder="Code-barres">
                                                 </div>
                                                 <button v-if="!isEditing" type="button" @click="generateBarcode"
@@ -822,7 +845,7 @@ function formatCurrency(value) {
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
                                             <textarea v-model="form.description" rows="3"
-                                                      class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors resize-none"
+                                                      class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors resize-none"
                                                       placeholder="Description optionnelle du produit..."></textarea>
                                             <InputError :message="form.errors.description" class="mt-1.5"/>
                                         </div>
@@ -855,14 +878,14 @@ function formatCurrency(value) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">DCI</label>
                                                 <input v-model="form.dci" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Dénomination commune">
                                                 <InputError :message="form.errors.dci" class="mt-1.5"/>
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Forme</label>
                                                 <input v-model="form.forme" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Comprimé, sirop...">
                                                 <InputError :message="form.errors.forme" class="mt-1.5"/>
                                             </div>
@@ -872,14 +895,14 @@ function formatCurrency(value) {
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Dosage</label>
                                                 <input v-model="form.dosage" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="500mg, 10ml...">
                                                 <InputError :message="form.errors.dosage" class="mt-1.5"/>
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Laboratoire</label>
                                                 <input v-model="form.laboratoire" type="text"
-                                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                       class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                        placeholder="Nom du laboratoire">
                                                 <InputError :message="form.errors.laboratoire" class="mt-1.5"/>
                                             </div>
@@ -889,7 +912,7 @@ function formatCurrency(value) {
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Unité par boîte</label>
                                             <input v-model="form.unite" type="number"
-                                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
+                                                   class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 transition-colors"
                                                    placeholder="Ex: 30">
                                             <InputError :message="form.errors.unite" class="mt-1.5"/>
                                         </div>
@@ -955,7 +978,7 @@ function formatCurrency(value) {
                                                         <span class="text-gray-400 text-sm font-medium">Dhs</span>
                                                     </div>
                                                     <input v-model="form.prix_public" type="number" step="0.01" min="0"
-                                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-12 pr-4 transition-colors"
+                                                           class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-12 pr-4 transition-colors"
                                                            placeholder="0.00">
                                                 </div>
                                                 <InputError :message="form.errors.prix_public" class="mt-1.5"/>
@@ -969,7 +992,7 @@ function formatCurrency(value) {
                                                         </svg>
                                                     </div>
                                                     <input v-model="form.limit_command" type="number" min="0"
-                                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
+                                                           class="block w-full rounded-xl border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 pl-10 pr-4 transition-colors"
                                                            placeholder="Quantité minimum">
                                                 </div>
                                                 <InputError :message="form.errors.limit_command" class="mt-1.5"/>

@@ -106,6 +106,20 @@ function submit() {
     form.montantPaye = total.value;
     form.post(route('ventes.store'));
 }
+
+function resetForm() {
+    form.reset();
+    form.produits = [];
+    form.date = new Date();
+    form.paiement = modes[0];
+    form.remise = 0;
+    form.montantPaye = 0;
+    form.dateEcheance = null;
+    montantRecu.value = null;
+    const defaultClient = allClients.value.find(c => c.id === 1) || allClients.value[0] || null;
+    selectedClient.value = defaultClient;
+    form.client_id = defaultClient ? defaultClient.id : null;
+}
 </script>
 
 <template>
@@ -244,9 +258,10 @@ function submit() {
 
                         <!-- Actions -->
                         <div class="flex gap-3">
-                            <Link :href="route('ventes.index')" class="flex-1 text-center rounded-xl px-4 py-3 text-sm font-semibold text-gray-700 bg-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                                Annuler
-                            </Link>
+                            <button type="button" @click="resetForm"
+                                    class="flex-1 text-center rounded-xl px-4 py-3 text-sm font-semibold text-gray-700 bg-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                Réinitialiser
+                            </button>
                             <button type="button" @click="submit" :disabled="form.processing || form.produits.length === 0"
                                     class="flex-[2] rounded-xl px-4 py-3 text-sm font-semibold text-white bg-emerald-600 shadow-sm hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                                 {{ form.processing ? 'Traitement...' : 'Valider la vente' }}

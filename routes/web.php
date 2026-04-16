@@ -42,7 +42,7 @@ Route::middleware([
     Route::get('export', [\App\Http\Controllers\ProduitController::class,'export']);
     Route::get('exportPerimes', [\App\Http\Controllers\ProduitController::class,'exportPerimes']);
     Route::get('stock', [\App\Http\Controllers\ProduitController::class,'stock']);
-    Route::post('barcodes', [\App\Http\Controllers\ProduitController::class,'barcodes']);
+    Route::get('barcodes', [\App\Http\Controllers\ProduitController::class,'barcodes'])->name('produits.barcodes');
     Route::get('notifications',[\App\Http\Controllers\DashboardController::class,'notifications'])->name('notifications.index');
     Route::delete('notifications/all',[\App\Http\Controllers\DashboardController::class,'deleteAllNotifications'])->name('notifications.markasread');
     Route::get('markasread',[\App\Http\Controllers\DashboardController::class,'markAllAsRead'])->name('notifications.deleteAll');
